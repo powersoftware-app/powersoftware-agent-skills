@@ -1,0 +1,21 @@
+{
+  "name": "plan-seo-site",
+  "description": "Plan a product site's SEO infrastructure and keyword-driven landing pages with 哥飞's method: one domain + one-level semantic subdirectory + one-page-one-keyword, task-words not attribute-words, keyword KD / referring-domain budget, content i18n & hreflang/canonical checks, trailing-slash & main-domain normalization, and Search Console indexing verification.",
+  "version": "1.0.0",
+  "author": {
+    "name": "PowerSoftware / mizhanchengxi"
+  },
+  "homepage": "https://github.com/powersoftware-app/powersoftware-agent-skills",
+  "repository": "https://github.com/powersoftware-app/powersoftware-agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "agent-skill",
+    "powersoftware",
+    "seo",
+    "keyword-research",
+    "landing-page",
+    "i18n",
+    "semantic-subdirectory"
+  ]
+}

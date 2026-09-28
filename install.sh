@@ -88,6 +88,11 @@ case "$SKILL" in
     echo "  node fetch-sdk.mjs --lang node --dest <your-project>/vendor   # pull the latest SDK source"
     echo "  node smoke.mjs --product <productUniqueCode>                  # verify platform connectivity"
     ;;
+  plan-seo-site)
+    echo "Next steps (knowledge-only skill, no scripts):"
+    echo "  open $DEST/SKILL.md and follow the 5 phases"
+    echo "  run the repository self-check in $DEST/reference.md (section C) against your site's repo"
+    ;;
   *)
     echo "Next steps:"
     echo "  cd $DEST/scripts"

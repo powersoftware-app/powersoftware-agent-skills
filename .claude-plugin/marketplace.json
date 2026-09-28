@@ -26,6 +26,15 @@
       "skills": [
         "./skills/integrate-license"
       ]
+    },
+    {
+      "name": "plan-seo-site",
+      "description": "Knowledge-only playbook to plan a product site's SEO infrastructure and keyword-driven landing pages with 哥飞's method: one domain + one-level semantic subdirectory + one-page-one-keyword, task-words not attribute-words, keyword KD/referring-domain budget, content i18n & hreflang/canonical checks, trailing-slash & main-domain normalization, and Search Console indexing verification. Includes a repo self-check list and a worked powersoftware.app case.",
+      "source": "./plugin/plan-seo-site/",
+      "strict": false,
+      "skills": [
+        "./skills/plan-seo-site"
+      ]
     }
   ]
 }

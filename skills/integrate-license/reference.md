@@ -121,4 +121,7 @@ client: activate(code, mc) → store token → verifyCached on feature use   (cl
 - Fingerprint: no disk/exec → plugin-side stable ID + quota in `chrome.storage.local`
   (`{periodKey, used}` still applies); see `docs/浏览器插件授权接入指南_v3.md` and
   `node/src/webextension.js`.
-- Editions default to `trialCount = 20` per edition for plugin products.
+- `trialCount` is an edition-level trial dimension that exists only for products published under the
+  usage-based quota model (`licensePricingModel = QUOTA`); under the default `EDITION` model trials are
+  day-based (`trialDays`) and the publish form exposes no trial-count field. Read the value from the
+  response and degrade gracefully when it is `null`.

@@ -22,9 +22,9 @@
       "licenseAllowDeveloperIssue": false,
       "licenseDefaultMaxMachines": 3,
       "licenseEditions": [
-        { "code": "BASIC", "name": "Basic", "sort": 1, "currency": "CNY", "productPrice": 29, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Core features for individuals." },
-        { "code": "PRO", "name": "Pro", "sort": 2, "currency": "CNY", "productPrice": 59, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Adds sync and collaboration." },
-        { "code": "ULTIMATE", "name": "Ultimate", "sort": 3, "currency": "CNY", "productPrice": 99, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Team features and priority support." }
+        { "code": "BASIC", "name": "Basic", "sort": 1, "currency": "CNY", "productPrice": 29, "billingPeriod": "PERMANENT", "description": "Core features for individuals." },
+        { "code": "PRO", "name": "Pro", "sort": 2, "currency": "CNY", "productPrice": 59, "billingPeriod": "PERMANENT", "description": "Adds sync and collaboration." },
+        { "code": "ULTIMATE", "name": "Ultimate", "sort": 3, "currency": "CNY", "productPrice": 99, "billingPeriod": "PERMANENT", "description": "Team features and priority support." }
       ],
       "consumptionRevenueSharing": false,
       "sourceStationHaveConsumptionRevenueSharing": false

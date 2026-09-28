@@ -86,6 +86,10 @@ try {
         Write-Host "  cd `"$Dest\scripts`""
         Write-Host "  node fetch-sdk.mjs --lang node --dest <your-project>/vendor   # pull the latest SDK source"
         Write-Host "  node smoke.mjs --product <productUniqueCode>                  # verify platform connectivity"
+    } elseif ($Skill -eq "plan-seo-site") {
+        Write-Host "Next steps (knowledge-only skill, no scripts):"
+        Write-Host "  open `"$Dest\SKILL.md`" and follow the 5 phases"
+        Write-Host "  run the repository self-check in `"$Dest\reference.md`" (section C) against your site's repo"
     } else {
         Write-Host "Next steps:"
         Write-Host "  cd `"$Dest\scripts`""

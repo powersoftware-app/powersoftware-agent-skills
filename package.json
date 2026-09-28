@@ -1,7 +1,7 @@
 {
   "name": "@mizhanchengxi/powersoftware-agent-skills",
   "version": "0.1.0",
-  "description": "Agent Skills for PowerSoftware: publish software products end-to-end.",
+  "description": "Agent Skills for PowerSoftware: publish software products end-to-end, integrate licensing, and plan a site's SEO.",
   "type": "module",
   "engines": {
     "node": ">=18"
@@ -18,7 +18,9 @@
     "claude",
     "powersoftware",
     "license",
-    "software-publishing"
+    "software-publishing",
+    "seo",
+    "keyword-research"
   ],
   "license": "MIT",
   "repository": {

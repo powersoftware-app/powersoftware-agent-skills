@@ -19,7 +19,7 @@ Skill 就是一份纯 Markdown 剧本（可搭配脚本），告诉 AI Agent *�
    - Qoder 个人级：~/.qoder-cn/skills
    - Claude Code：   ~/.claude/skills
    （如果不确定自己属于哪个 Agent，先问我。）
-2. 两个 skill 都装：publish-product 和 integrate-license。
+2. 按需要安装 skill：publish-product、integrate-license 和/或 plan-seo-site。
 3. 获取安装脚本。安装脚本自身已经内置“Gitee 优先、不通回退 GitHub”。最可靠的方式
    （尤其在中国大陆）是先克隆仓库再本地执行，两个镜像任选：
    - Gitee 镜像（中国大陆推荐）：
@@ -59,7 +59,7 @@ bash install.sh claude <skill-name>
 bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 ```
 
-`<skill-name>` 可填 `publish-product` 或 `integrate-license`。
+`<skill-name>` 可填 `publish-product`、`integrate-license` 或 `plan-seo-site`。
 
 > GitHub 访问不畅？仓库在 Gitee 有镜像，可克隆后本地执行安装脚本：
 > `git clone https://gitee.com/powersoftware-app/powersoftware-agent-skills && cd powersoftware-agent-skills && bash install.sh`。
@@ -72,6 +72,7 @@ bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 /plugin marketplace add powersoftware-app/powersoftware-agent-skills
 /plugin install publish-product@powersoftware-agent-skills
 /plugin install integrate-license@powersoftware-agent-skills
+/plugin install plan-seo-site@powersoftware-agent-skills
 ```
 
 安装后，直接在对话里提到这个 skill 的名字即可——Claude Code 会按需动态加载。
@@ -82,8 +83,9 @@ bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 |-------|------|
 | [`publish-product`](skills/publish-product/SKILL.md) | 端到端剧本：在 PowerSoftware 上**发布一个软件产品（授权或非授权）**——注册用户 → 申请合作伙伴（**含强制人工审核闸门**）→ 上传封面/详情图与安装包 → 提交产品审核。附带零依赖 Node 脚本。 |
 | [`integrate-license`](skills/integrate-license/SKILL.md) | 剧本：用官方零依赖 SDK（Node / Python / Java）把**客户端软件接入 PowerSoftware 授权体系**——选择接入场景、运行时从 GitHub 拉取最新 SDK、实现机器码/试用/激活/版本门控/购买页跳转，并对接入做冒烟自检。附带零依赖 Node 脚本。 |
+| [`plan-seo-site`](skills/plan-seo-site/SKILL.md) | 纯知识剧本：用**哥飞方法论**规划一个产品站的 **SEO 基建与按关键词驱动的落地页**——一个域名 + 一级语义子目录 + 一页一词、任务词而非属性词、选词 KD/引用域预算、内容国际化与 hreflang/canonical 核查、尾斜杠与主域规范化、搜索控制台收录验收。含 15 项仓库自检清单与 powersoftware.app 实操案例。无需脚本。 |
 
-> 不想手动拷文件？已额外提供 Qoder 原生插件包，分别位于 [`plugin/publish-product/`](plugin/publish-product/README.md) 与 [`plugin/integrate-license/`](plugin/integrate-license/README.md)——直接把整个目录放进 Qoder 插件目录或项目的 plugin manifest 即可。
+> 不想手动拷文件？已额外提供 Qoder 原生插件包，分别位于 [`plugin/publish-product/`](plugin/publish-product/README.md)、[`plugin/integrate-license/`](plugin/integrate-license/README.md) 与 [`plugin/plan-seo-site/`](plugin/plan-seo-site/README.md)——直接把整个目录放进 Qoder 插件目录或项目的 plugin manifest 即可。
 
 ## 安装一个 Skill
 
