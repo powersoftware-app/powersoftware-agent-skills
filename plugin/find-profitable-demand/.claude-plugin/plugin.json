@@ -1,0 +1,22 @@
+{
+  "name": "find-profitable-demand",
+  "description": "Find, validate and monetize a profitable demand for an indie / 出海 website with 哥飞's 跑通闭环 method: demand-sourcing (站找站·站找词 / mine running-ads products / split big-site traffic / 财富密码词根 / KGR blue-ocean), a hard validation gate (搜索量来自共识 · 真实网页供应量 · 第一美元 ROI), fast MVP launch, traffic & link paths, AdSense/paid monetization, and a real case library (Chatbase, Fyxer, Deformity, Chessigma, Teachizy…). Decides WHAT to build; the sibling plan-seo-site skill covers HOW to rank it.",
+  "version": "1.0.0",
+  "author": {
+    "name": "PowerSoftware / mizhanchengxi"
+  },
+  "homepage": "https://github.com/powersoftware-app/powersoftware-agent-skills",
+  "repository": "https://github.com/powersoftware-app/powersoftware-agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "agent-skill",
+    "powersoftware",
+    "demand-research",
+    "keyword-research",
+    "indie-hacker",
+    "monetization",
+    "adsense",
+    "chuhai"
+  ]
+}

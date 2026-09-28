@@ -90,6 +90,10 @@ try {
         Write-Host "Next steps (knowledge-only skill, no scripts):"
         Write-Host "  open `"$Dest\SKILL.md`" and follow the 5 phases"
         Write-Host "  run the repository self-check in `"$Dest\reference.md`" (section C) against your site's repo"
+    } elseif ($Skill -eq "find-profitable-demand") {
+        Write-Host "Next steps (knowledge-only skill, no scripts):"
+        Write-Host "  open `"$Dest\SKILL.md`" and run the 6-phase 跑通闭环 loop"
+        Write-Host "  source demands (§A), validate with KGR/第一美元 (§B), then cite the case library (§C) in `"$Dest\reference.md`""
     } else {
         Write-Host "Next steps:"
         Write-Host "  cd `"$Dest\scripts`""

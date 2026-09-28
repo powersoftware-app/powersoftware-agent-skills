@@ -35,6 +35,15 @@
       "skills": [
         "./skills/plan-seo-site"
       ]
+    },
+    {
+      "name": "find-profitable-demand",
+      "description": "Demand-first playbook to find, validate and monetize a profitable demand for an indie / 出海 website with 哥飞's 跑通闭环 method: demand-sourcing (站找站·站找词, running-ads mining, big-site traffic split, 财富密码词根, KGR blue-ocean), a hard validation gate (共识搜索量 / 真实网页供应量 / 第一美元 ROI), fast MVP launch, traffic & link paths, AdSense/paid monetization, and a real case library. Decides WHAT to build; plan-seo-site covers HOW to rank it.",
+      "source": "./plugin/find-profitable-demand/",
+      "strict": false,
+      "skills": [
+        "./skills/find-profitable-demand"
+      ]
     }
   ]
 }

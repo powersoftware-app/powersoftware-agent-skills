@@ -61,7 +61,7 @@ bash install.sh claude <skill-name>
 bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 ```
 
-Replace `<skill-name>` with `publish-product`, `integrate-license`, or `plan-seo-site`.
+Replace `<skill-name>` with `publish-product`, `integrate-license`, `plan-seo-site`, or `find-profitable-demand`.
 
 > Can't reach GitHub? The repo is mirrored on Gitee — clone it and run the installer locally:
 > `git clone https://gitee.com/powersoftware-app/powersoftware-agent-skills && cd powersoftware-agent-skills && bash install.sh`.
@@ -75,6 +75,7 @@ This repo is also registered as a **Claude Code Plugin marketplace** via [`.clau
 /plugin install publish-product@powersoftware-agent-skills
 /plugin install integrate-license@powersoftware-agent-skills
 /plugin install plan-seo-site@powersoftware-agent-skills
+/plugin install find-profitable-demand@powersoftware-agent-skills
 ```
 
 After install, just mention the skill by name — Claude Code loads it dynamically whenever you ask to publish a product on PowerSoftware.
@@ -86,8 +87,9 @@ After install, just mention the skill by name — Claude Code loads it dynamical
 | [`publish-product`](skills/publish-product/SKILL.md) | End-to-end playbook to **publish a software product** (license-enabled or not) on PowerSoftware: register a user → apply as partner (with a mandatory human review gate) → upload cover/detail images & installer → submit the product for review. Ships with dependency-free Node scripts. |
 | [`integrate-license`](skills/integrate-license/SKILL.md) | Playbook to **wire a client software product into the PowerSoftware license system** with the official zero-dependency SDK (Node / Python / Java): choose the integration scenario, fetch the latest SDK from GitHub at runtime, implement machine-code / trial / activation / edition-gating / purchase-redirect, and smoke-test the wiring. Ships with dependency-free Node scripts. |
 | [`plan-seo-site`](skills/plan-seo-site/SKILL.md) | Knowledge-only playbook to **plan a product site's SEO infrastructure and keyword-driven landing pages** using 哥飞's method: one domain + one-level semantic subdirectory + one-page-one-keyword, task-words not attribute-words, keyword KD / referring-domain budget, content i18n & hreflang/canonical checks, trailing-slash & main-domain normalization, and Search Console indexing verification. Includes a 15-point repository self-check and a worked `powersoftware.app` case. No scripts needed. |
+| [`find-profitable-demand`](skills/find-profitable-demand/SKILL.md) | Knowledge-only, demand-first playbook to **find, validate and monetize a profitable demand** for an indie / 出海 site using 哥飞's 跑通闭环 method: demand-sourcing (站找站·站找词, mine running-ads products, split big-site traffic, 财富密码词根, KGR blue-ocean), a hard validation gate (共识搜索量 / 真实网页供应量 / 第一美元 ROI), fast MVP launch, traffic & link paths, AdSense/paid monetization, plus a real case library. Decides *what* to build; `plan-seo-site` decides *how to rank it*. No scripts needed. |
 
-> Prefer Qoder's plugin installer instead of copying files? Qoder-native plugin packages are also published at [`plugin/publish-product/`](plugin/publish-product/README.md), [`plugin/integrate-license/`](plugin/integrate-license/README.md) and [`plugin/plan-seo-site/`](plugin/plan-seo-site/README.md) — drop the whole folder into your Qoder plugins directory or your project's plugin manifest.
+> Prefer Qoder's plugin installer instead of copying files? Qoder-native plugin packages are also published at [`plugin/publish-product/`](plugin/publish-product/README.md), [`plugin/integrate-license/`](plugin/integrate-license/README.md), [`plugin/plan-seo-site/`](plugin/plan-seo-site/README.md) and [`plugin/find-profitable-demand/`](plugin/find-profitable-demand/README.md) — drop the whole folder into your Qoder plugins directory or your project's plugin manifest.
 
 ## Install a skill
 

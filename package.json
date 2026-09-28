@@ -1,7 +1,7 @@
 {
   "name": "@mizhanchengxi/powersoftware-agent-skills",
   "version": "0.1.0",
-  "description": "Agent Skills for PowerSoftware: publish software products end-to-end, integrate licensing, and plan a site's SEO.",
+  "description": "Agent Skills for PowerSoftware: publish software products end-to-end, integrate licensing, plan a site's SEO, and find a profitable demand (哥飞 method).",
   "type": "module",
   "engines": {
     "node": ">=18"
