@@ -123,14 +123,15 @@ structure gaps** (usually the real problem). Inspect these; for each, mark ✅ p
 | 7 | **Main domain** | middleware/DNS/redirect | one host canonical; the other form **301 in ONE hop** (no bare→www→locale double jump) |
 | 8 | robots prefix | `public/robots.txt` | `Disallow` paths carry the **language prefix** (else silently ineffective) |
 | 9 | Home `<title>` | home page template | has a positioning keyword, not only the brand |
-| 10 | Product/page **title i18n** | backend content model / i18n field set | title & summary go through the same i18n mechanism as body fields (no source-language leaking) |
+| 10 | Product/page **title i18n** | backend content model / i18n field set | **brand name (`productName`) = language-invariant, NOT machine-translated** (one coined mark across all locales); only tagline/summary/demand copy localize via the i18n field set. No source-language leaking, and no per-locale brand variants that split the entity |
 | 11 | Product **slug** | DB schema + URL rewrite | readable semantic slug; old numeric URL 301s to it |
 | 12 | **Landing-page type** | routes + content model | first-level semantic subdirs exist (`/upscale/`), one page one keyword, with keyword/TD/H/FAQ/CTA fields |
 | 13 | Landing registry → sitemap | data file + sitemap | new landings auto-appear in sitemap |
 | 14 | Structured data | page head | `SoftwareApplication`+`FAQPage`+`BreadcrumbList` |
 | 15 | Analytics | head/env | GSC property matches the chosen host variant; confirm GA4/Clarity if used |
+| 16 | **Brand name ownable** | exact-match Google + query.domains | the coined brand ranks for *itself* (no incumbent owns the term), `.com/.app/.ai` available, not a word Google "corrects" (Pixelfold→Pixel Fold). A taken/descriptive brand caps the brand-word channel at 0 |
 
-Typical finding: rows 1–5, 14–15 are ✅ (the "tech is fine" part), while 6–13 are the actual gaps.
+Typical finding: rows 1–5, 14–15 are ✅ (the "tech is fine" part), while 6–13 and 16 are the actual gaps.
 The highest-leverage single fix is usually **#6 trailing slash** (it silently creates duplicate
 GSC rows and blocks indexing of a whole site at DR<1).
 

@@ -14,7 +14,7 @@ Two layers:
 
 1. **The transferable method** (this file) — mindset + an 8-phase lifecycle. Applies to any site.
 2. **A worked example + repo self-check** ([reference.md](reference.md)) — keyword data, copy
-   frameworks, a 15-point repository self-check, and the `powersoftware.app` diagnosis that the
+   frameworks, a 16-point repository self-check, and the `powersoftware.app` diagnosis that the
    numbers here are drawn from.
 
 > Scope: this is *planning + self-check* knowledge. No scripts on purpose — the only "tooling" is a
@@ -133,6 +133,13 @@ Directly search the word and look at the **top 10**:
   canonical. This alone often clears most "Crawled – currently not indexed".
 - Reserve the first-level semantic subdirs from Phase 1; give product pages a readable **slug** too,
   but choose the value as a **demand word or genuinely unique brand** — never an already-taken word.
+- **Brand-name collision pre-check — run this BEFORE you coin a name.** A brand must be SERP-ownable:
+  if an established mark already ranks for your exact name, your brand searches show *them* and Google
+  can't aggregate you into one entity (this is what killed `CleanCanvas` — a Shopify theme dev owns it).
+  So: (1) search the exact candidate on Google — anything you don't own near the top disqualifies it;
+  (2) check domain availability across `.com/.app/.ai` (query.domains); (3) avoid "generic-root +
+  AI/tool-suffix" coinages (they collide) and names Google silently "corrects" (`Pixelfold` → `Pixel Fold`).
+  A taken or purely descriptive name caps the whole brand-word channel at zero — no i18n work can save it.
 
 ### Phase 4 — Build the page (TDH, not TDK)
 
@@ -156,8 +163,15 @@ The **skeleton** (language-prefixed URLs, self-referencing canonical, full `href
 `x-default`, `xhtml:link` sitemap, SSR) is "don't-lose-points" plumbing — if present, don't rebuild.
 Use **real URLs + hreflang** for languages, **not JS locale switching**. The gap is almost always the
 **content layer**: product/page **titles & summaries untranslated** (source-language leaking into the
-`en-US` site; English `<title>` = bare brand). Fix at the data model (put title fields through the
-same i18n mechanism as body fields). **Narrow first:** don't spread a thin site across 6 locales —
+`en-US` site; English `<title>` = bare brand). Fix at the data model, but **split the two slots — never
+treat "the title" as one uniform body field:**
+- **Brand name (`productName`) = a language-invariant constant.** A real brand is *not* translated; keep
+  one coined mark across every locale. Machine-translating a brand into 6 variants shatters the entity
+  into 6 half-localized names nobody searches. If the name is genuinely localizable (a descriptive word),
+  curate each locale by hand — never blind-translate it.
+- **Descriptive tagline / summary / demand copy = localize normally** through the same i18n mechanism
+  body fields use (and the searchable demand wording belongs on landing pages, not in the brand slot).
+**Narrow first:** don't spread a thin site across 6 locales —
 win one market, keep `hreflang` for all (cost≈0), add a language once it produces impressions.
 
 ### Phase 6 — Launch checklist
@@ -204,6 +218,8 @@ Console + Analytics, submit Sitemap, set Robots.txt, optional structured data.
 | Chase the single biggest keyword. | If 9/10 incumbents built pages for it, it's a red ocean. Prefer the vacuum word. |
 | `/en-US` vs `/en-US/` both 200. | Splits one page's ranking into two GSC rows. 301 to one form. |
 | Batch-publish junk pages on a new site. | A new site gets penalized for thin spam; ship a few strong pages first. |
+| Product/brand name already taken or purely descriptive. | The brand-word channel (returning visitors who search your name) never opens, and Google can't build an entity for a name someone else owns. Coin a SERP-ownable mark (Phase 3 pre-check). |
+| Machine-translating the **brand name** per locale. | A brand is language-invariant; 6 translated variants split your entity 6 ways. Localize the *description*, keep the *brand* constant. |
 
 ---
 
@@ -212,7 +228,7 @@ Console + Analytics, submit Sitemap, set Robots.txt, optional structured data.
 - [reference.md](reference.md)
   - §A — worked keyword-research data (哥飞 KD / volume / CPC / SERP verdict tables).
   - §B — landing-page copy frameworks (`/remove-watermark/`, `/upscale/` full templates).
-  - §C — **repository self-check list** (15 checks: canonical, hreflang, trailing slash, robots prefix,
+  - §C — **repository self-check list** (16 checks: canonical, hreflang, trailing slash, robots prefix,
     main domain, content i18n, slug, landing type, internal links…) to run against a real repo.
   - §D — the `powersoftware.app` case snapshot (findings, missing fields, execution order).
   - §E — the condensed 哥飞 method handbook (mindset, sourcing, wealth-password roots, ROI formula,
