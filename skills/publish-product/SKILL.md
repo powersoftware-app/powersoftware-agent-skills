@@ -1,11 +1,13 @@
 ---
-name: publish-license-product
-description: Publish a license-enabled software product end-to-end on the PowerSoftware platform (powersoftware.app / powersoftware.cn). Use when repeatedly listing/uploading license products, onboarding a partner account, or automating the product-publish flow. Covers both TRIAL_FIRST (try-before-buy) and PAY_FIRST (pay-before-use) license products, user registration, partner application (with a mandatory human approval gate), cover/detail image + installer upload, and product submission.
+name: publish-product
+description: Publish a software product end-to-end on the PowerSoftware platform (powersoftware.app / powersoftware.cn). Use when repeatedly listing/uploading products (license-enabled or not), onboarding a partner account, or automating the product-publish flow. For license products it covers both TRIAL_FIRST (try-before-buy) and PAY_FIRST (pay-before-use) sales models, plus user registration, partner application (with a mandatory human approval gate), cover/detail image + installer upload, and product submission.
 ---
 
-# Publish a License Product (PowerSoftware)
+# Publish a Product (PowerSoftware)
 
-Playbook to repeatedly publish **license-enabled** software products on PowerSoftware. The
+Playbook to repeatedly publish software products of ANY form on PowerSoftware — **license** products
+(`CLIENT_SOFTWARE` / `PLUGIN`, TRIAL_FIRST or PAY_FIRST) and **non-license** products
+(`SERVER_SOFTWARE` / `DIGITAL_GOOD` / `ONLY_PROMOTION`). The
 platform's upload page has two prerequisites that this skill encodes:
 
 1. **The account must be registered AND approved as a partner** (`DEVELOPER` role) — and the
@@ -103,20 +105,31 @@ approval hasn't landed yet — wait and re-login.
    a `manifest.json` with `manifest_version` → `PLUGIN`; Electron/Tauri/`electron-builder`/NSIS
    markers → `CLIENT_SOFTWARE`.
 
-Valid values: `CLIENT_SOFTWARE · SERVER_SOFTWARE · ONLY_PROMOTION · DIGITAL_GOOD · PLUGIN`.
-This skill publishes **license** products, which the platform restricts to `CLIENT_SOFTWARE` or
-`PLUGIN`.
+All five forms are publishable. `productForm` picks the valid fields and which asset becomes the
+downloadable package:
 
-**If none of the three yields a value** (e.g. there is no analysable project directory, or its
-signals are absent/ambiguous), do **NOT** guess. `publish.mjs` stops with a prompt — relay it to
-the user and ask them to choose, then re-run with the chosen `--form`. Ask in the user's own
-terms, e.g.:
+| productForm | 中文 | package asset | license? |
+|---|---|---|---|
+| `CLIENT_SOFTWARE` | 客户端软件 | `assets.installer` → `clientSoftware[]` | optional |
+| `PLUGIN` | 浏览器插件 | `assets.installer` → `clientSoftware[]` | optional |
+| `SERVER_SOFTWARE` | 服务端软件 | `assets.sourceCodeFile` → `sourceCodeFile` | no |
+| `DIGITAL_GOOD` | 数字商品 | `assets.sourceCodeFile` → `sourceCodeFile` | no |
+| `ONLY_PROMOTION` | 仅推广 | (none — links out only) | no |
 
-> 这个软件是什么形态？(1) 桌面/客户端软件 CLIENT_SOFTWARE  (2) 浏览器插件 PLUGIN
-> —— 授权产品目前只支持这两种。告诉我选哪个。
+Only **license** products are restricted to `CLIENT_SOFTWARE` / `PLUGIN`; the other three forms are
+always non-license. See "Product rules the payload must satisfy" below for each form's required
+fields and the matching template.
 
-(For a non-license product the same prompt lists all five forms.) Only after the user answers,
-re-run `node publish.mjs --spec … --form <their choice>`.
+**If none of the three resolution steps yields a value** (no analysable project directory, or its
+signals are absent/ambiguous), do **NOT** guess. `publish.mjs` stops with a prompt — relay it and
+ask the user to choose a form, then re-run with the chosen `--form`. Ask in the user's own terms,
+listing all five, e.g.:
+
+> 这个产品是什么形态？(1) 桌面/客户端软件 CLIENT_SOFTWARE  (2) 浏览器插件 PLUGIN
+>  (3) 服务端软件 SERVER_SOFTWARE  (4) 数字商品 DIGITAL_GOOD  (5) 仅推广 ONLY_PROMOTION
+> —— 告诉我选哪个（需要授权码的话只能选 1 或 2）。
+
+Only after the user answers, re-run `node publish.mjs --spec … --form <their choice>`.
 
 ### Phase 4 → 5 — Upload assets, then submit (ordering is mandatory)
 
@@ -125,8 +138,11 @@ The product references media by `objectName`; nothing can be saved before upload
 injects the returned `objectName`s into the payload, then submits.
 
 ```bash
-node publish.mjs --spec ../templates/product.license.example.json            # TRIAL_FIRST 先用后付
-node publish.mjs --spec ../templates/product.license.payfirst.example.json   # PAY_FIRST 先付后用
+node publish.mjs --spec ../templates/product.license.example.json            # TRIAL_FIRST 先用后付（授权）
+node publish.mjs --spec ../templates/product.license.payfirst.example.json   # PAY_FIRST 先付后用（授权）
+node publish.mjs --spec ../templates/product.server.example.json             # SERVER_SOFTWARE 服务端
+node publish.mjs --spec ../templates/product.digital-good.example.json       # DIGITAL_GOOD 数字商品
+node publish.mjs --spec ../templates/product.promotion.example.json          # ONLY_PROMOTION 仅推广
 ```
 
 What it does under the hood (see [reference.md](reference.md) for the raw endpoints):
@@ -148,11 +164,13 @@ What it does under the hood (see [reference.md](reference.md) for the raw endpoi
    `softwareVersion` than what is live — bump `baseInfo.softwareVersion` for a new release.
 4. `POST /product/submit`.
 
-### License-product rules the payload must satisfy
+### Product rules the payload must satisfy
 
-A **license** product is `productForm: CLIENT_SOFTWARE` (or `PLUGIN`) with `licenseEnabled: true`.
-The sales model (`baseInfo.salesModel`) decides the payment shape — confirm it with the user
-before filling the spec:
+Every product needs a cover image + 3–20 detail images + `introduce` text. On top of that, the
+rules depend on the form — and for license products, on the sales model. Confirm the form and,
+where relevant, the sales model (`baseInfo.salesModel`) with the user before filling the spec.
+
+#### License products (`CLIENT_SOFTWARE` / `PLUGIN`, `licenseEnabled: true`)
 
 **`TRIAL_FIRST` (先用后付 — try before you buy):**
 
@@ -175,9 +193,31 @@ before filling the spec:
   per-edition `trialCount` may still grant count-based trials of an edition,
 - `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
 
-Use the matching template: [`product.license.example.json`](templates/product.license.example.json)
-(TRIAL_FIRST) / [`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json)
-(PAY_FIRST).
+Templates: [`product.license.example.json`](templates/product.license.example.json) (TRIAL_FIRST) /
+[`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json) (PAY_FIRST).
+
+#### Non-license products
+
+No `licenseEnabled` / `licenseEditions` / `licensePlatformPayment` fields — set none of them.
+
+**`SERVER_SOFTWARE` (服务端软件)** — [`product.server.example.json`](templates/product.server.example.json):
+
+- `softwareVersion` `x.y.z`; a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
+- `receivePayment.productPrice ≥ 1`; optional `deployPrice`, which must be `≤ productPrice × 2`,
+- `serverSoftwareDeployRole`: `MYSELF` or `PLATFORM`; `canDownloadSourceCode` boolean.
+
+**`DIGITAL_GOOD` (数字商品)** — [`product.digital-good.example.json`](templates/product.digital-good.example.json):
+
+- `digitalGoodsTypeId` required (numeric, from `GET {baseUrl}/digitalGoodsType/all`),
+- `softwareVersion` `x.y.z`; a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
+- `receivePayment.productPrice ≥ 1`,
+- **must NOT** carry deploy/promotion fields (`deployPrice`, `deployIncome`, `afterSalesFreeDay`,
+  `serverSoftwareDeployRole`) — the validator rejects them.
+
+**`ONLY_PROMOTION` (仅推广)** — [`product.promotion.example.json`](templates/product.promotion.example.json):
+
+- no downloadable package, no `softwareVersion`, and **no** `receivePayment.productPrice` requirement,
+- just cover + 3–20 detail images + `introduce`; point buyers to `sourceStation` / `shopLink`.
 
 On success the product enters `PENDING_RELEASE` (platform review) — that is expected; publishing
 to the storefront is a further operator action, not part of this skill.
@@ -223,6 +263,10 @@ was not returned, and where to read it (developer console → product page).
 | suffix / size rejected | Wrong `businessType`, non-whitelisted file type, or oversize file. |
 | `cannot determine the software form` | No `--form`, no `baseInfo.productForm`, and nothing analysable in the cwd → **ask the user** which form, then re-run with `--form <VALUE>`. |
 | `LICENSE product ... must be CLIENT_SOFTWARE or PLUGIN` | A license/TRIAL_FIRST product was given a non-client form → confirm the real form with the user (usually CLIENT_SOFTWARE) and re-run. |
+| `sourceCodeFile.require` | SERVER_SOFTWARE / DIGITAL_GOOD missing a package → set `spec.assets.sourceCodeFile`. |
+| `digitalGoodsType.required` | DIGITAL_GOOD missing `baseInfo.digitalGoodsTypeId` (numeric, from `GET {baseUrl}/digitalGoodsType/all`). |
+| `digitalGoods.deployFields` | DIGITAL_GOOD carried deploy/promotion fields → remove `deployPrice`/`deployIncome`/`afterSalesFreeDay`/`serverSoftwareDeployRole`. |
+| `deployIncome.greater` | SERVER_SOFTWARE `deployPrice` > `productPrice × 2` → lower it. |
 
 ## Resources
 
@@ -231,3 +275,6 @@ was not returned, and where to read it (developer console → product page).
 - [templates/partner.example.json](templates/partner.example.json) — partner onboarding profile.
 - [templates/product.license.example.json](templates/product.license.example.json) — TRIAL_FIRST (先用后付) license product spec.
 - [templates/product.license.payfirst.example.json](templates/product.license.payfirst.example.json) — PAY_FIRST (先付后用) license product spec.
+- [templates/product.server.example.json](templates/product.server.example.json) — SERVER_SOFTWARE (服务端软件) non-license spec.
+- [templates/product.digital-good.example.json](templates/product.digital-good.example.json) — DIGITAL_GOOD (数字商品) non-license spec.
+- [templates/product.promotion.example.json](templates/product.promotion.example.json) — ONLY_PROMOTION (仅推广) non-license spec.

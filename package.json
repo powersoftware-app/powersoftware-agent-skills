@@ -1,16 +1,16 @@
 {
   "name": "@mizhanchengxi/powersoftware-agent-skills",
   "version": "0.1.0",
-  "description": "Agent Skills for PowerSoftware: publish license-enabled software products end-to-end.",
+  "description": "Agent Skills for PowerSoftware: publish software products end-to-end.",
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "register": "node skills/publish-license-product/scripts/register.mjs",
-    "login": "node skills/publish-license-product/scripts/login.mjs",
-    "apply-partner": "node skills/publish-license-product/scripts/apply-partner.mjs",
-    "publish": "node skills/publish-license-product/scripts/publish.mjs"
+    "register": "node skills/publish-product/scripts/register.mjs",
+    "login": "node skills/publish-product/scripts/login.mjs",
+    "apply-partner": "node skills/publish-product/scripts/apply-partner.mjs",
+    "publish": "node skills/publish-product/scripts/publish.mjs"
   },
   "keywords": [
     "agent-skill",

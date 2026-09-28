@@ -12,7 +12,7 @@
 #
 # Defaults:
 #   TARGET_DIR = $HOME/.qoder-cn/skills
-#   SKILL_NAME = publish-license-product
+#   SKILL_NAME = publish-product
 #
 # Recognised TARGET_DIR shortcuts:
 #   qoder      -> $HOME/.qoder-cn/skills    (personal scope)
@@ -24,7 +24,7 @@ set -euo pipefail
 # 依次尝试的仓库镜像：Gitee 优先（中国大陆可达性好），不通时回退 GitHub 权威源（两者内容一致）
 REPO_URLS="https://gitee.com/powersoftware-app/powersoftware-agent-skills.git https://github.com/powersoftware-app/powersoftware-agent-skills.git"
 TARGET_ARG="${1:-$HOME/.qoder-cn/skills}"
-SKILL="${2:-publish-license-product}"
+SKILL="${2:-publish-product}"
 
 case "$TARGET_ARG" in
   qoder)  TARGET="$HOME/.qoder-cn/skills" ;;

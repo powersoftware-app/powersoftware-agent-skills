@@ -1,6 +1,6 @@
-# PowerSoftware Publish License Product — Qoder Plugin
+# PowerSoftware Publish Product — Qoder Plugin
 
-Qoder-native plugin that packages the **`publish-license-product`** Agent Skill. It teaches an AI coding agent how to publish a license-enabled software product end-to-end on [PowerSoftware](https://www.powersoftware.app) / [幂栈网](https://www.powersoftware.cn).
+Qoder-native plugin that packages the **`publish-product`** Agent Skill. It teaches an AI coding agent how to publish a software product (license-enabled or not) end-to-end on [PowerSoftware](https://www.powersoftware.app) / [幂栈网](https://www.powersoftware.cn).
 
 ## What this plugin does
 
@@ -18,18 +18,18 @@ Ships with dependency-free Node 18+ scripts — **no `npm install` needed**.
 ## Provenance
 
 - **Source repo**: [powersoftware-app/powersoftware-agent-skills](https://github.com/powersoftware-app/powersoftware-agent-skills)
-- **Source skill directory**: [`skills/publish-license-product/`](https://github.com/powersoftware-app/powersoftware-agent-skills/tree/main/skills/publish-license-product)
+- **Source skill directory**: [`skills/publish-product/`](https://github.com/powersoftware-app/powersoftware-agent-skills/tree/main/skills/publish-product)
 - **Upstream release**: [v1.0.0](https://github.com/powersoftware-app/powersoftware-agent-skills/releases/tag/v1.0.0)
 - **Logo**: `assets/avatar.svg` — original artwork created for this plugin (keyhole + upload arrow, PowerSoftware brand colors). No third-party asset reused.
 
 ## Included
 
 ```text
-publish-license-product/
+publish-product/
 ├── .qoder-plugin/plugin.json
 ├── README.md
 ├── assets/avatar.svg
-└── skills/publish-license-product/
+└── skills/publish-product/
     ├── SKILL.md
     ├── reference.md
     ├── scripts/
@@ -53,7 +53,7 @@ Nothing from the source skill was omitted.
 
 ```bash
 # macOS / Linux / WSL
-bash <(curl -sL https://raw.githubusercontent.com/powersoftware-app/powersoftware-agent-skills/main/install.sh) qoder publish-license-product
+bash <(curl -sL https://raw.githubusercontent.com/powersoftware-app/powersoftware-agent-skills/main/install.sh) qoder publish-product
 ```
 
 ```powershell
@@ -63,11 +63,11 @@ iwr -useb https://raw.githubusercontent.com/powersoftware-app/powersoftware-agen
 
 **Option B — drop this plugin folder into a Qoder project:**
 
-Copy the entire `publish-license-product/` (this folder) into your Qoder plugin directory or reference it in your project's plugin manifest; Qoder reads `.qoder-plugin/plugin.json` at the plugin root.
+Copy the entire `publish-product/` (this folder) into your Qoder plugin directory or reference it in your project's plugin manifest; Qoder reads `.qoder-plugin/plugin.json` at the plugin root.
 
 ## Setup the skill needs
 
-Before first use, edit `skills/publish-license-product/scripts/config.local.json` (copied from `config.example.json`):
+Before first use, edit `skills/publish-product/scripts/config.local.json` (copied from `config.example.json`):
 
 ```json
 {

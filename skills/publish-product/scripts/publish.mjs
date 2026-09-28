@@ -1,6 +1,9 @@
 // publish.mjs — upload the spec's local assets, inject their objectNames, then submit.
 //   node publish.mjs --spec ../templates/product.license.example.json            (TRIAL_FIRST 先用后付)
 //   node publish.mjs --spec ../templates/product.license.payfirst.example.json    (PAY_FIRST 先付后用)
+//   node publish.mjs --spec ../templates/product.server.example.json             (SERVER_SOFTWARE 服务端软件)
+//   node publish.mjs --spec ../templates/product.digital-good.example.json        (DIGITAL_GOOD 数字商品)
+//   node publish.mjs --spec ../templates/product.promotion.example.json           (ONLY_PROMOTION 仅推广)
 //   node publish.mjs --spec ....json --dry-run     (upload + assemble only, no submit)
 //   node publish.mjs --spec ....json --form PLUGIN (override the software form / 软件形态)
 //   node publish.mjs --spec ....json --product-id 123  (edit this product explicitly)
@@ -32,7 +35,7 @@ const at = (p) => resolve(baseDir, p); // resolve asset path relative to the spe
 
 // ---- Resolve software form (形态): --form > spec > auto-detect(cwd) > ask the user -------
 const PRODUCT_FORMS = ['CLIENT_SOFTWARE', 'SERVER_SOFTWARE', 'ONLY_PROMOTION', 'DIGITAL_GOOD', 'PLUGIN'];
-// This skill publishes LICENSE products; the platform only allows licenses on these two forms.
+// LICENSE products are only allowed on these two forms; NON-license products may use any of the 5.
 const LICENSE_FORMS = ['CLIENT_SOFTWARE', 'PLUGIN'];
 
 const readdirSafe = (d) => { try { return readdirSync(d); } catch { return []; } };
@@ -67,7 +70,7 @@ if (!form) {
     `  Not passed via --form, not set in spec.product.baseInfo.productForm, and no clear signal in the working directory (${process.cwd()}).\n` +
     '  → ASK THE USER which form this product is, then re-run with: --form <VALUE>\n' +
     `  Valid values: ${PRODUCT_FORMS.join(' | ')}\n` +
-    `  NOTE: this skill publishes LICENSE products — the platform only allows ${LICENSE_FORMS.join(' | ')}.`
+    `  NOTE: any form can be published; only LICENSE products are restricted to ${LICENSE_FORMS.join(' | ')}.`
   );
 }
 if (!PRODUCT_FORMS.includes(form)) {
@@ -78,12 +81,15 @@ const isLicense = baseInfo.licenseEnabled === true || baseInfo.salesModel === 'T
 if (isLicense && !LICENSE_FORMS.includes(form)) {
   fail(`a LICENSE product (licenseEnabled / TRIAL_FIRST) must be ${LICENSE_FORMS.join(' or ')} — got '${form}'. Ask the user to correct the form, then re-run with --form CLIENT_SOFTWARE (or PLUGIN).`);
 }
-// PAY_FIRST (先付后用) license products: the platform validator requires receivePayment.productPrice >= 1
-// (no ¥0 buyout); fail early with an actionable message instead of a server-side rejection.
-if (isLicense && baseInfo.salesModel === 'PAY_FIRST') {
+// Price pre-check mirrors the platform validator (ProductSchema superRefine): for
+// CLIENT_SOFTWARE / SERVER_SOFTWARE / DIGITAL_GOOD / PLUGIN that are NOT TRIAL_FIRST (PAY_FIRST or
+// unset → defaults PAY_FIRST), receivePayment.productPrice must be >= 1 (no ¥0 buyout) — regardless
+// of whether the product enables licenses. ONLY_PROMOTION has no price requirement. Fail early.
+const PRICE_REQUIRED_FORMS = ['CLIENT_SOFTWARE', 'SERVER_SOFTWARE', 'DIGITAL_GOOD', 'PLUGIN'];
+if (baseInfo.salesModel !== 'TRIAL_FIRST' && PRICE_REQUIRED_FORMS.includes(form)) {
   const pp = product.receivePayment?.productPrice;
   if (pp == null || Number(pp) < 1) {
-    fail("PAY_FIRST (先付后用) product needs spec.product.receivePayment.productPrice >= 1 — no ¥0 buyout; ask the user for the product price and re-run.");
+    fail(`${form} (PAY_FIRST 先付后用) needs spec.product.receivePayment.productPrice >= 1 — no ¥0 buyout; ask the user for the product price and re-run. (ONLY_PROMOTION / TRIAL_FIRST do not require a price.)`);
   }
 }
 baseInfo.productForm = form; // back-fill so the payload carries the resolved form
@@ -137,6 +143,26 @@ const hasExecutable = (baseInfo.clientSoftware || []).some((s) =>
   (s.softwarePackages || []).some((p) => p.executableFile && p.executableFile.url));
 if ((form === 'CLIENT_SOFTWARE' || form === 'PLUGIN') && !hasExecutable) {
   fail('CLIENT_SOFTWARE/PLUGIN needs at least one installer: set spec.assets.installer or a clientSoftware[].executableFile.file');
+}
+// SERVER_SOFTWARE / DIGITAL_GOOD carry their downloadable package in `sourceCodeFile`
+// (businessType product_file), NOT the client `clientSoftware` tree. The platform requires it.
+if ((form === 'SERVER_SOFTWARE' || form === 'DIGITAL_GOOD') && !baseInfo.sourceCodeFile) {
+  fail(`${form} needs a package: set spec.assets.sourceCodeFile (uploaded as baseInfo.sourceCodeFile).`);
+}
+// DIGITAL_GOOD additionally needs a category id and must NOT carry any deploy fields.
+if (form === 'DIGITAL_GOOD') {
+  if (baseInfo.digitalGoodsTypeId == null) {
+    fail('DIGITAL_GOOD needs baseInfo.digitalGoodsTypeId (数字商品类型 id — from GET /frontApi/digitalGoodsType/all).');
+  }
+  const rp = product.receivePayment || {};
+  if (rp.deployPrice != null || rp.deployIncome != null || baseInfo.afterSalesFreeDay != null || baseInfo.serverSoftwareDeployRole != null) {
+    fail('DIGITAL_GOOD must NOT carry deploy/promotion fields (deployPrice, deployIncome, afterSalesFreeDay, serverSoftwareDeployRole) — remove them.');
+  }
+}
+// SERVER_SOFTWARE optional deploy fee must not exceed 2× the product price (platform rule).
+if (form === 'SERVER_SOFTWARE' && product.receivePayment?.deployPrice != null && product.receivePayment?.productPrice != null
+  && Number(product.receivePayment.deployPrice) > Number(product.receivePayment.productPrice) * 2) {
+  fail('SERVER_SOFTWARE deployPrice must be <= productPrice × 2 (platform rule).');
 }
 
 ok('assets uploaded & payload assembled.');

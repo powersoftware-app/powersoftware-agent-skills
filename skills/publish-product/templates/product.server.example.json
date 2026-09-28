@@ -1,0 +1,36 @@
+{
+  "_comment": "SERVER_SOFTWARE product (非授权 / 先付后用). publish.mjs uploads assets.sourceCodeFile as businessType product_file -> baseInfo.sourceCodeFile, then submits. Rules (see reference.md): softwareVersion x.y.z; receivePayment.productPrice >= 1; optional deployPrice must be <= productPrice x 2; serverSoftwareDeployRole MYSELF|PLATFORM.",
+  "assets": {
+    "coverImage": "./assets/cover.png",
+    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "sourceCodeFile": "./assets/myapp-server-1.0.0.zip"
+  },
+  "product": {
+    "submitMode": "submit",
+    "baseInfo": {
+      "productName": "My Self-Host Server",
+      "secondName": "Deployable backend service",
+      "summary": "A paid, self-hostable server product: buy once, download the package, deploy on your own infrastructure.",
+      "sourceStation": "https://myapp.example.com",
+      "productForm": "SERVER_SOFTWARE",
+      "softwareVersion": "1.0.0",
+      "salesModel": "PAY_FIRST",
+      "serverSoftwareDeployRole": "MYSELF",
+      "canDownloadSourceCode": true,
+      "industryIds": [],
+      "occupationIds": [],
+      "tagIds": []
+    },
+    "introduce": {
+      "functions": "REST API, webhook ingestion, pluggable storage backends and an admin console.",
+      "targetUserGroup": "Teams that must self-host and keep data on their own infrastructure.",
+      "usageScenarios": "Deploy behind a reverse proxy for internal automation and data processing.",
+      "painPoints": "SaaS-only alternatives do not meet data-residency requirements."
+    },
+    "receivePayment": {
+      "currency": "CNY",
+      "productPrice": 499,
+      "deployPrice": 800
+    }
+  }
+}

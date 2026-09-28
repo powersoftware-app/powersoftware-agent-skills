@@ -1,0 +1,31 @@
+{
+  "_comment": "DIGITAL_GOOD product (非授权 / 先付后用) — an e-book / template pack / media zip. publish.mjs uploads assets.sourceCodeFile as businessType product_file -> baseInfo.sourceCodeFile. Rules (see reference.md): softwareVersion x.y.z required; digitalGoodsTypeId required (from GET /frontApi/digitalGoodsType/all); receivePayment.productPrice >= 1; NO deploy fields (deployPrice/deployIncome) and no serverSoftwareDeployRole/afterSalesFreeDay.",
+  "assets": {
+    "coverImage": "./assets/cover.png",
+    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "sourceCodeFile": "./assets/design-templates-v1.0.0.zip"
+  },
+  "product": {
+    "submitMode": "submit",
+    "baseInfo": {
+      "productName": "Indie Landing Page Template Pack",
+      "secondName": "10 ready-to-ship landing pages",
+      "summary": "A downloadable digital product: a zipped pack of conversion-focused landing page templates.",
+      "sourceStation": "https://myshop.example.com",
+      "productForm": "DIGITAL_GOOD",
+      "digitalGoodsTypeId": 1,
+      "softwareVersion": "1.0.0",
+      "salesModel": "PAY_FIRST"
+    },
+    "introduce": {
+      "functions": "10 responsive landing pages, dark/light themes, Figma + HTML source.",
+      "targetUserGroup": "Indie hackers and small teams shipping marketing pages fast.",
+      "usageScenarios": "Launch a product landing page in an afternoon by editing a template.",
+      "painPoints": "Building polished landing pages from scratch is slow and error-prone."
+    },
+    "receivePayment": {
+      "currency": "CNY",
+      "productPrice": 39
+    }
+  }
+}

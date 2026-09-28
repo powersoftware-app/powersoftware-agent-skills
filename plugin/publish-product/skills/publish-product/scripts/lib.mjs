@@ -1,4 +1,4 @@
-// lib.mjs — shared helpers for the publish-license-product scripts (Node 18+, no deps).
+// lib.mjs — shared helpers for the publish-product scripts (Node 18+, no deps).
 import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join, extname, basename, resolve } from 'node:path';

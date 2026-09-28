@@ -1,4 +1,4 @@
-# Reference — PowerSoftware publish-license-product
+# Reference — PowerSoftware publish-product
 
 Raw contracts used by the scripts. Everything is JSON unless noted. Auth = the `SESSION_ID`
 cookie set by `/user/login`. Base path prefix: `{baseUrl}` already includes `/frontApi`
@@ -96,6 +96,22 @@ the same product goes down the EDIT branch. Editing requires a strictly greater 
 `productUniqueCode` (产品唯一编码) is generated at creation and never changes — it is the client
 license identifier (`new LicenseClient({ productUniqueCode })`). Surface it after publish and apply
 it to the workspace's license integration (see SKILL.md Phase 6); it is not a secret.
+
+## Forms & templates (all five are publishable)
+
+`publish.mjs` handles license **and** non-license products. Pick a template per form:
+
+| productForm | package asset | template | price rule |
+|---|---|---|---|
+| `CLIENT_SOFTWARE` | `assets.installer` → `clientSoftware[]` | `product.license.example.json` (TRIAL_FIRST) / `product.license.payfirst.example.json` (PAY_FIRST) | TRIAL_FIRST=0 / PAY_FIRST≥1 |
+| `PLUGIN` | `assets.installer` → `clientSoftware[]` | same as CLIENT_SOFTWARE | same |
+| `SERVER_SOFTWARE` | `assets.sourceCodeFile` → `sourceCodeFile` | `product.server.example.json` | PAY_FIRST≥1; `deployPrice ≤ productPrice×2` |
+| `DIGITAL_GOOD` | `assets.sourceCodeFile` → `sourceCodeFile` | `product.digital-good.example.json` | PAY_FIRST≥1; needs `digitalGoodsTypeId`; no deploy fields |
+| `ONLY_PROMOTION` | none (links out only) | `product.promotion.example.json` | no price required |
+
+Non-license products must NOT set `licenseEnabled`/`licenseEditions`/`licensePlatformPayment`.
+`publish.mjs` pre-checks the price / package / `digitalGoodsTypeId` / deploy-field rules above
+locally and fails with an actionable message before submitting.
 
 ## Enums (exact string values)
 

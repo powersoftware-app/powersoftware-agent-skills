@@ -19,7 +19,7 @@ Please install the PowerSoftware Agent Skills for me.
    - Qoder personal scope: ~/.qoder-cn/skills
    - Claude Code:          ~/.claude/skills
    (If it's unclear which agent you are, ask me first.)
-2. Install BOTH skills: publish-license-product and integrate-license.
+2. Install BOTH skills: publish-product and integrate-license.
 3. Get the installer. The installer itself already tries Gitee first and falls back to GitHub.
    The most reliable route — especially in mainland China — is to clone the repo and run the
    installer locally. Either mirror works:
@@ -61,7 +61,7 @@ bash install.sh claude <skill-name>
 bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 ```
 
-Replace `<skill-name>` with `publish-license-product` or `integrate-license`.
+Replace `<skill-name>` with `publish-product` or `integrate-license`.
 
 > Can't reach GitHub? The repo is mirrored on Gitee — clone it and run the installer locally:
 > `git clone https://gitee.com/powersoftware-app/powersoftware-agent-skills && cd powersoftware-agent-skills && bash install.sh`.
@@ -72,7 +72,7 @@ This repo is also registered as a **Claude Code Plugin marketplace** via [`.clau
 
 ```
 /plugin marketplace add powersoftware-app/powersoftware-agent-skills
-/plugin install publish-license-product@powersoftware-agent-skills
+/plugin install publish-product@powersoftware-agent-skills
 /plugin install integrate-license@powersoftware-agent-skills
 ```
 
@@ -82,10 +82,10 @@ After install, just mention the skill by name — Claude Code loads it dynamical
 
 | Skill | What it does |
 |-------|--------------|
-| [`publish-license-product`](skills/publish-license-product/SKILL.md) | End-to-end playbook to **publish a license-enabled software product** on PowerSoftware: register a user → apply as partner (with a mandatory human review gate) → upload cover/detail images & installer → submit the product for review. Ships with dependency-free Node scripts. |
+| [`publish-product`](skills/publish-product/SKILL.md) | End-to-end playbook to **publish a software product** (license-enabled or not) on PowerSoftware: register a user → apply as partner (with a mandatory human review gate) → upload cover/detail images & installer → submit the product for review. Ships with dependency-free Node scripts. |
 | [`integrate-license`](skills/integrate-license/SKILL.md) | Playbook to **wire a client software product into the PowerSoftware license system** with the official zero-dependency SDK (Node / Python / Java): choose the integration scenario, fetch the latest SDK from GitHub at runtime, implement machine-code / trial / activation / edition-gating / purchase-redirect, and smoke-test the wiring. Ships with dependency-free Node scripts. |
 
-> Prefer Qoder's plugin installer instead of copying files? Qoder-native plugin packages are also published at [`plugin/publish-license-product/`](plugin/publish-license-product/README.md) and [`plugin/integrate-license/`](plugin/integrate-license/README.md) — drop the whole folder into your Qoder plugins directory or your project's plugin manifest.
+> Prefer Qoder's plugin installer instead of copying files? Qoder-native plugin packages are also published at [`plugin/publish-product/`](plugin/publish-product/README.md) and [`plugin/integrate-license/`](plugin/integrate-license/README.md) — drop the whole folder into your Qoder plugins directory or your project's plugin manifest.
 
 ## Install a skill
 
@@ -94,22 +94,22 @@ Pick the skills directory for your agent and copy / symlink a skill folder into 
 **Qoder**
 ```bash
 # project scope (shared with your team via git)
-cp -r skills/publish-license-product  <your-repo>/.qoder/skills/
+cp -r skills/publish-product  <your-repo>/.qoder/skills/
 # personal scope (all your projects)
-cp -r skills/publish-license-product  ~/.qoder-cn/skills/
+cp -r skills/publish-product  ~/.qoder-cn/skills/
 ```
 
 **Claude Code / generic**
 ```bash
-cp -r skills/publish-license-product  ~/.claude/skills/
+cp -r skills/publish-product  ~/.claude/skills/
 ```
 
 The `scripts/` folder needs **Node.js 18+** (uses built-in `fetch`). No `npm install` required.
 
-## Quick start (publish-license-product)
+## Quick start (publish-product)
 
 ```bash
-cd skills/publish-license-product/scripts
+cd skills/publish-product/scripts
 cp config.example.json config.local.json   # fill in baseUrl / email / password
 node register.mjs --send-code              # email gets a 6-digit code
 node register.mjs --code 123456            # completes registration

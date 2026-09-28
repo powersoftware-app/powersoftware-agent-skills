@@ -1,6 +1,6 @@
 ---
 name: integrate-license
-description: Integrate PowerSoftware (powersoftware.app / powersoftware.cn) license codes into a client software product — machine-code binding, trial claim, activation, edition gating, purchase-page redirect, in-app issuance/upgrade (HMAC), and update checking — using the official zero-dependency powersoftware-license-sdk (Node.js / Python / Java). Use when adding license or paywall verification to a desktop/CLI product, when the user mentions 授权 / 授权码 / 激活 / 试用 / 幂栈 / licenseCode / activationToken / claimTrial / verifyCached, or is wiring the product published via the publish-license-product skill.
+description: Integrate PowerSoftware (powersoftware.app / powersoftware.cn) license codes into a client software product — machine-code binding, trial claim, activation, edition gating, purchase-page redirect, in-app issuance/upgrade (HMAC), and update checking — using the official zero-dependency powersoftware-license-sdk (Node.js / Python / Java). Use when adding license or paywall verification to a desktop/CLI product, when the user mentions 授权 / 授权码 / 激活 / 试用 / 幂栈 / licenseCode / activationToken / claimTrial / verifyCached, or is wiring the product published via the publish-product skill.
 ---
 
 # Integrate PowerSoftware License (client software)
@@ -11,7 +11,7 @@ this skill is the *knowledge* — which scenario applies, which calls go where, 
 are easy to get wrong. SDK source is fetched at runtime from its authoritative repo (see Step 2);
 **never copy SDK code from this skill — there is none here on purpose.**
 
-Companion skill: [`publish-license-product`](../publish-license-product/SKILL.md) publishes the
+Companion skill: [`publish-product`](../publish-product/SKILL.md) publishes the
 product first and yields the `productUniqueCode` used here.
 
 ## Step 0 — Pick the scenario (decide this before writing any code)

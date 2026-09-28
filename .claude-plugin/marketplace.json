@@ -10,12 +10,12 @@
   },
   "plugins": [
     {
-      "name": "publish-license-product",
-      "description": "End-to-end playbook to publish a license-enabled software product on PowerSoftware: register → partner human review gate → upload assets → submit. Ships with dependency-free Node 18+ scripts.",
-      "source": "./plugin/publish-license-product/",
+      "name": "publish-product",
+      "description": "End-to-end playbook to publish a software product (license-enabled or not) on PowerSoftware: register → partner human review gate → upload assets → submit. Ships with dependency-free Node 18+ scripts.",
+      "source": "./plugin/publish-product/",
       "strict": false,
       "skills": [
-        "./skills/publish-license-product"
+        "./skills/publish-product"
       ]
     },
     {

@@ -1,0 +1,24 @@
+{
+  "_comment": "ONLY_PROMOTION product (仅推广 / 非授权) — a listing that only promotes and links out (no downloadable file, no license, no price). publish.mjs uploads cover + detail images only; there is NO installer/sourceCodeFile for this form. Rules (see reference.md): no softwareVersion required, no receivePayment.productPrice requirement, no package needed — just coverImage + 3-20 introduce.images. Point buyers to sourceStation / shopLink.",
+  "assets": {
+    "coverImage": "./assets/cover.png",
+    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"]
+  },
+  "product": {
+    "submitMode": "submit",
+    "baseInfo": {
+      "productName": "My SaaS Promotion",
+      "secondName": "Drive traffic to the product site",
+      "summary": "A promotion-only listing that showcases the product and sends interested buyers to the official site / store.",
+      "sourceStation": "https://myapp.example.com",
+      "shopLink": "https://myapp.example.com/pricing",
+      "productForm": "ONLY_PROMOTION"
+    },
+    "introduce": {
+      "functions": "Showcases features, screenshots and use cases; links out to the vendor site for signup.",
+      "targetUserGroup": "Prospects discovering the product through the PowerSoftware storefront.",
+      "usageScenarios": "Marketing presence and referral traffic rather than an on-platform purchase.",
+      "painPoints": "The vendor wants discovery/leads without selling or delivering files on-platform."
+    }
+  }
+}

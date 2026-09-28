@@ -19,7 +19,7 @@ Skill 就是一份纯 Markdown 剧本（可搭配脚本），告诉 AI Agent *�
    - Qoder 个人级：~/.qoder-cn/skills
    - Claude Code：   ~/.claude/skills
    （如果不确定自己属于哪个 Agent，先问我。）
-2. 两个 skill 都装：publish-license-product 和 integrate-license。
+2. 两个 skill 都装：publish-product 和 integrate-license。
 3. 获取安装脚本。安装脚本自身已经内置“Gitee 优先、不通回退 GitHub”。最可靠的方式
    （尤其在中国大陆）是先克隆仓库再本地执行，两个镜像任选：
    - Gitee 镜像（中国大陆推荐）：
@@ -59,7 +59,7 @@ bash install.sh claude <skill-name>
 bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 ```
 
-`<skill-name>` 可填 `publish-license-product` 或 `integrate-license`。
+`<skill-name>` 可填 `publish-product` 或 `integrate-license`。
 
 > GitHub 访问不畅？仓库在 Gitee 有镜像，可克隆后本地执行安装脚本：
 > `git clone https://gitee.com/powersoftware-app/powersoftware-agent-skills && cd powersoftware-agent-skills && bash install.sh`。
@@ -70,7 +70,7 @@ bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 
 ```
 /plugin marketplace add powersoftware-app/powersoftware-agent-skills
-/plugin install publish-license-product@powersoftware-agent-skills
+/plugin install publish-product@powersoftware-agent-skills
 /plugin install integrate-license@powersoftware-agent-skills
 ```
 
@@ -80,10 +80,10 @@ bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 
 | Skill | 作用 |
 |-------|------|
-| [`publish-license-product`](skills/publish-license-product/SKILL.md) | 端到端剧本：在 PowerSoftware 上**发布一个支持授权码的软件产品**——注册用户 → 申请合作伙伴（**含强制人工审核闸门**）→ 上传封面/详情图与安装包 → 提交产品审核。附带零依赖 Node 脚本。 |
+| [`publish-product`](skills/publish-product/SKILL.md) | 端到端剧本：在 PowerSoftware 上**发布一个软件产品（授权或非授权）**——注册用户 → 申请合作伙伴（**含强制人工审核闸门**）→ 上传封面/详情图与安装包 → 提交产品审核。附带零依赖 Node 脚本。 |
 | [`integrate-license`](skills/integrate-license/SKILL.md) | 剧本：用官方零依赖 SDK（Node / Python / Java）把**客户端软件接入 PowerSoftware 授权体系**——选择接入场景、运行时从 GitHub 拉取最新 SDK、实现机器码/试用/激活/版本门控/购买页跳转，并对接入做冒烟自检。附带零依赖 Node 脚本。 |
 
-> 不想手动拷文件？已额外提供 Qoder 原生插件包，分别位于 [`plugin/publish-license-product/`](plugin/publish-license-product/README.md) 与 [`plugin/integrate-license/`](plugin/integrate-license/README.md)——直接把整个目录放进 Qoder 插件目录或项目的 plugin manifest 即可。
+> 不想手动拷文件？已额外提供 Qoder 原生插件包，分别位于 [`plugin/publish-product/`](plugin/publish-product/README.md) 与 [`plugin/integrate-license/`](plugin/integrate-license/README.md)——直接把整个目录放进 Qoder 插件目录或项目的 plugin manifest 即可。
 
 ## 安装一个 Skill
 
@@ -92,22 +92,22 @@ bash install.sh /path/to/your-repo/.qoder/skills <skill-name>
 **Qoder**
 ```bash
 # 项目级（随仓库共享给团队）
-cp -r skills/publish-license-product  <你的仓库>/.qoder/skills/
+cp -r skills/publish-product  <你的仓库>/.qoder/skills/
 # 个人级（对你所有项目生效）
-cp -r skills/publish-license-product  ~/.qoder-cn/skills/
+cp -r skills/publish-product  ~/.qoder-cn/skills/
 ```
 
 **Claude Code / 通用**
 ```bash
-cp -r skills/publish-license-product  ~/.claude/skills/
+cp -r skills/publish-product  ~/.claude/skills/
 ```
 
 `scripts/` 目录需要 **Node.js 18+**（使用内置 `fetch`），**无需 `npm install`**。
 
-## 快速上手（publish-license-product）
+## 快速上手（publish-product）
 
 ```bash
-cd skills/publish-license-product/scripts
+cd skills/publish-product/scripts
 cp config.example.json config.local.json   # 填入 baseUrl / email / password
 node register.mjs --send-code              # 邮箱收到 6 位验证码
 node register.mjs --code 123456            # 完成注册

@@ -7,7 +7,7 @@
 #   iwr -useb https://gitee.com/powersoftware-app/powersoftware-agent-skills/raw/main/install.ps1 | iex
 #
 # Or with explicit target/skill:
-#   .\install.ps1 -Target "$HOME\.qoder-cn\skills" -Skill "publish-license-product"
+#   .\install.ps1 -Target "$HOME\.qoder-cn\skills" -Skill "publish-product"
 #
 # Recognised Target shortcuts:
 #   qoder      -> $HOME\.qoder-cn\skills    (personal scope)
@@ -16,7 +16,7 @@
 
 param(
     [string]$Target = "$HOME\.qoder-cn\skills",
-    [string]$Skill  = "publish-license-product"
+    [string]$Skill  = "publish-product"
 )
 
 $ErrorActionPreference = "Stop"
