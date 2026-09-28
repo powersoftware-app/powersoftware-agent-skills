@@ -1,5 +1,6 @@
 // publish.mjs — upload the spec's local assets, inject their objectNames, then submit.
-//   node publish.mjs --spec ../templates/product.license.example.json
+//   node publish.mjs --spec ../templates/product.license.example.json            (TRIAL_FIRST 先用后付)
+//   node publish.mjs --spec ../templates/product.license.payfirst.example.json    (PAY_FIRST 先付后用)
 //   node publish.mjs --spec ....json --dry-run     (upload + assemble only, no submit)
 //   node publish.mjs --spec ....json --form PLUGIN (override the software form / 软件形态)
 //   node publish.mjs --spec ....json --product-id 123  (edit this product explicitly)
@@ -76,6 +77,14 @@ const isLicense = baseInfo.licenseEnabled === true || baseInfo.salesModel === 'T
   || (Array.isArray(baseInfo.licenseEditions) && baseInfo.licenseEditions.length > 0);
 if (isLicense && !LICENSE_FORMS.includes(form)) {
   fail(`a LICENSE product (licenseEnabled / TRIAL_FIRST) must be ${LICENSE_FORMS.join(' or ')} — got '${form}'. Ask the user to correct the form, then re-run with --form CLIENT_SOFTWARE (or PLUGIN).`);
+}
+// PAY_FIRST (先付后用) license products: the platform validator requires receivePayment.productPrice >= 1
+// (no ¥0 buyout); fail early with an actionable message instead of a server-side rejection.
+if (isLicense && baseInfo.salesModel === 'PAY_FIRST') {
+  const pp = product.receivePayment?.productPrice;
+  if (pp == null || Number(pp) < 1) {
+    fail("PAY_FIRST (先付后用) product needs spec.product.receivePayment.productPrice >= 1 — no ¥0 buyout; ask the user for the product price and re-run.");
+  }
 }
 baseInfo.productForm = form; // back-fill so the payload carries the resolved form
 ok(`productForm = ${form} (source: ${formSource}).`);

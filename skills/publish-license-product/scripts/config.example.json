@@ -1,6 +1,6 @@
 {
-  "_comment": "Copy to config.local.json (git-ignored) and fill in. CN baseUrl avoids Turnstile on login/register.",
-  "baseUrl": "https://www.powersoftware.cn/frontApi",
+  "_comment": "Copy to config.local.json (git-ignored) and fill in. Default baseUrl is the overseas prod site (.app). If Turnstile is re-enabled server-side, switch to the CN site https://www.powersoftware.cn/frontApi, whose login/register skip it.",
+  "baseUrl": "https://www.powersoftware.app/frontApi",
   "email": "you@example.com",
   "password": "change-me-1",
   "language": "zh-CN"

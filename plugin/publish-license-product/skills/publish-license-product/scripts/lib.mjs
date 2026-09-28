@@ -30,7 +30,7 @@ export function loadConfig() {
     catch (e) { fail(`config.local.json is not valid JSON: ${e.message}`); }
   }
   const cfg = {
-    baseUrl: process.env.PS_BASE_URL || file.baseUrl || 'https://www.powersoftware.cn/frontApi',
+    baseUrl: process.env.PS_BASE_URL || file.baseUrl || 'https://www.powersoftware.app/frontApi',
     email: process.env.PS_EMAIL || file.email,
     password: process.env.PS_PASSWORD || file.password,
     language: process.env.PS_LANGUAGE || file.language || 'zh-CN',

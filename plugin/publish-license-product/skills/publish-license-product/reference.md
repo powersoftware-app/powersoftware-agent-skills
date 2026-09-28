@@ -2,7 +2,7 @@
 
 Raw contracts used by the scripts. Everything is JSON unless noted. Auth = the `SESSION_ID`
 cookie set by `/user/login`. Base path prefix: `{baseUrl}` already includes `/frontApi`
-(e.g. `https://www.powersoftware.cn/frontApi`).
+(e.g. `https://www.powersoftware.app/frontApi`).
 
 ## Response envelope
 
@@ -19,7 +19,7 @@ Read `success` first; on failure surface `message` (it is an i18n-resolved, huma
 
 | Purpose | Method & path | Body |
 |---|---|---|
-| Send register/login code | `POST /user/verificationCode` | `{ email, businessType }` (prod non-CN also needs `turnstileToken`) |
+| Send register/login code | `POST /user/verificationCode` | `{ email, businessType }` (`turnstileToken` only when Turnstile is enforced — currently disabled server-side) |
 | Register | `POST /user/register` | `{ username, password, rePassword, verificationCode, invitationCode? }` |
 | Login | `POST /user/login` | `{ username, password, loginWay: "PASSWORD" }` → sets `SESSION_ID` cookie; `content.developer: boolean` |
 
@@ -103,7 +103,7 @@ it to the workspace's license integration (see SKILL.md Phase 6); it is not a se
   - Resolution in `publish.mjs`: `--form` > `spec.baseInfo.productForm` > auto-detect from the
     cwd (`manifest.json`+`manifest_version`→`PLUGIN`; Electron/Tauri/`electron-builder`/NSIS→`CLIENT_SOFTWARE`).
     If still unknown it **stops and asks the user** — never guesses. License products must be `CLIENT_SOFTWARE`/`PLUGIN`.
-- `salesModel`: `PAY_FIRST` · `TRIAL_FIRST`
+- `salesModel`: `PAY_FIRST`（先付后用，缺省） · `TRIAL_FIRST`（先用后付）
 - `licenseEditions[].billingPeriod`: `PERMANENT` · `MONTHLY` · `YEARLY`
 - `licenseEditions[].trialCountPeriod`: `TOTAL` · `MONTHLY`
 - `receivePayment.currency`: `CNY` · `USD` (others limited to these two in the validator)
@@ -139,7 +139,8 @@ it to the workspace's license integration (see SKILL.md Phase 6); it is not a se
 
 `currency`, `productPrice`, `productIncome`, `deployPrice`, `deployIncome`.
 - `TRIAL_FIRST`: `productPrice` must be `0`/null.
-- `PAY_FIRST` on client/server/digital-good/plugin: `productPrice ≥ 1`.
+- `PAY_FIRST` on client/server/digital-good/plugin: `productPrice ≥ 1` (the upfront price paid
+  before first use; ¥0 buyout rejected).
 - `SERVER_SOFTWARE`: `deployPrice` ≤ `productPrice × 2`.
 - `DIGITAL_GOOD`: no deploy fields allowed; `digitalGoodsTypeId` + `softwareVersion` + file required.
 
@@ -147,6 +148,9 @@ it to the workspace's license integration (see SKILL.md Phase 6); it is not a se
 
 - `TRIAL_FIRST` requires `licenseEnabled=true` AND `licensePlatformPayment=true` AND `trialDays`
   AND ≥1 `licenseEdition`, and only for `CLIENT_SOFTWARE`/`PLUGIN`.
+- `PAY_FIRST` (先付后用) may still enable licenses: `licenseEnabled=true` + ≥1 `licenseEdition`
+  allowed; only `receivePayment.productPrice ≥ 1` is enforced. `trialDays` must NOT be set
+  (it is a `TRIAL_FIRST`-only field); per-edition `trialCount` still works.
 - `licensePlatformPayment=true`: present edition prices must be strictly ascending in array order.
 - Edition `(code, billingPeriod?)` must be unique (billingPeriod defaults `PERMANENT`).
 - CLIENT_SOFTWARE/PLUGIN: at least one `executableFile.url` across all packages.
@@ -161,9 +165,9 @@ it to the workspace's license integration (see SKILL.md Phase 6); it is not a se
 | `PRODUCT.validate.licenseEditions.required` | no editions while `TRIAL_FIRST` |
 | `PRODUCT.validate.licenseEditions.periodDuplicate` | duplicate code+period |
 | `PRODUCT.validate.licenseEditions.priceAscending` | platform-payment prices not ascending |
-| `PRODUCT.validate.productPrice.required` | price < 1 for PAY_FIRST |
+| `PRODUCT.validate.productPrice.required` | price < 1 (or missing) for `PAY_FIRST` |
 | `PRODUCT.validate.productPrice.trialFirstZero` | price ≠ 0 for TRIAL_FIRST |
 | `PRODUCT.validate.softwareVersion.format` | version not `x.y.z` |
 | `FILE.process.suffix_not_allowed` / `file_size_exceed` / `upload_limit` | upload rejected |
 | `DEVELOPER.validate.alipayAccount.required` / `paypalAccount.required` | payout account per country |
-| `USER.process.verificationCode_captcha_required` | prod non-CN needs a Turnstile token — use the CN site |
+| `USER.process.verificationCode_captcha_required` | Turnstile enforced again — switch `baseUrl` to the CN site (login/register there skip it) |

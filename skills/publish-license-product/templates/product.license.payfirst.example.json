@@ -1,0 +1,42 @@
+{
+  "_comment": "License (PAY_FIRST 先付后用) client-software product: the user pays receivePayment.productPrice (>= 1, no ¥0 buyout) BEFORE first use, then activates a license edition. Unlike TRIAL_FIRST there is no mandatory trialDays (omit it); per-edition trialCount may still grant count-based trials. Keep the pricing/edition rules in reference.md in mind (edition prices strictly ascending when licensePlatformPayment=true).",
+  "assets": {
+    "coverImage": "./assets/cover.png",
+    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "installer": "./assets/MyApp-setup-1.0.0.exe"
+  },
+  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "product": {
+    "submitMode": "submit",
+    "baseInfo": {
+      "productName": "My Awesome App",
+      "secondName": "One-click productivity suite",
+      "summary": "A pay-first license-gated desktop app: buy once, download, then activate per edition.",
+      "sourceStation": "https://myapp.example.com",
+      "productForm": "CLIENT_SOFTWARE",
+      "softwareVersion": "1.0.0",
+      "salesModel": "PAY_FIRST",
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseAllowDeveloperIssue": false,
+      "licenseDefaultMaxMachines": 3,
+      "licenseEditions": [
+        { "code": "BASIC", "name": "Basic", "sort": 1, "currency": "CNY", "productPrice": 29, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Core features for individuals." },
+        { "code": "PRO", "name": "Pro", "sort": 2, "currency": "CNY", "productPrice": 59, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Adds sync and collaboration." },
+        { "code": "ULTIMATE", "name": "Ultimate", "sort": 3, "currency": "CNY", "productPrice": 99, "billingPeriod": "PERMANENT", "trialCount": 20, "description": "Team features and priority support." }
+      ],
+      "consumptionRevenueSharing": false,
+      "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "introduce": {
+      "functions": "Offline-first sync, command palette, plugin marketplace, cross-device clipboard, and granular license tiers.",
+      "targetUserGroup": "Knowledge workers, indie hackers and small teams who want a fast, private productivity tool.",
+      "usageScenarios": "Daily note-taking, task planning and team knowledge sharing across Windows machines.",
+      "painPoints": "Existing tools are either cloud-only or lack fair tiered licensing."
+    },
+    "receivePayment": {
+      "currency": "CNY",
+      "productPrice": 199
+    }
+  }
+}

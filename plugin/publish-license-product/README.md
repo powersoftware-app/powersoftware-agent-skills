@@ -10,7 +10,7 @@ Given a target product spec (JSON), the skill guides the agent through:
 2. **Partner application** with a **mandatory human review gate** — the platform only injects the `DEVELOPER` role at login when the operator approves (`auditStatus === PASS`), so the skill pauses here and cannot bypass it.
 3. **Re-login** to pick up the newly granted `DEVELOPER` role.
 4. **Asset upload** — cover image, 3–20 detail images, and installer/archive; each goes through `checkFileExists → getPreSignedUrl → PUT` and returns the `objectName` used inside the product payload.
-5. **Product submission** to `/product/submit`, with strict schema validation for `TRIAL_FIRST` vs `PAY_FIRST` sales models and edition price ordering.
+5. **Product submission** to `/product/submit`, with strict schema validation for `TRIAL_FIRST` (先用后付) vs `PAY_FIRST` (先付后用) sales models and edition price ordering.
 6. **Return the `productUniqueCode`** (产品唯一编码) — the publish response now includes it; the skill prints it and records it to `ps-product.json` in the workspace, to be wired into the client license integration (see the companion `integrate-license` skill).
 
 Ships with dependency-free Node 18+ scripts — **no `npm install` needed**.
@@ -41,7 +41,8 @@ publish-license-product/
     │   └── config.example.json
     └── templates/
         ├── partner.example.json
-        └── product.license.example.json
+        ├── product.license.example.json            (TRIAL_FIRST)
+        └── product.license.payfirst.example.json   (PAY_FIRST)
 ```
 
 Nothing from the source skill was omitted.
@@ -70,14 +71,14 @@ Before first use, edit `skills/publish-license-product/scripts/config.local.json
 
 ```json
 {
-  "baseUrl": "https://www.powersoftware.cn/frontApi",
+  "baseUrl": "https://www.powersoftware.app/frontApi",
   "email": "you@example.com",
   "password": "your-password"
 }
 ```
 
-- `baseUrl` defaults to the CN site — it has no Cloudflare Turnstile on login/registration, so scripted flows work.
-- For the overseas prod site (`https://www.powersoftware.app/frontApi`), Turnstile is enforced on login — run the first login interactively in a browser, then reuse the session, or use the CN site for automation.
+- `baseUrl` defaults to the overseas prod site `https://www.powersoftware.app/frontApi` (the platform's primary site). Turnstile on login/registration is currently disabled server-side, so scripted flows work directly.
+- If a `captcha required` error ever reappears (Turnstile re-enabled), switch `baseUrl` to the CN site `https://www.powersoftware.cn/frontApi` — login/registration there skip Turnstile by design — or run the first login interactively in a browser and reuse the session.
 - `config.local.json` and `.ps-session.json` are gitignored. **Never commit credentials or session cookies.**
 
 ## Human-review gate (by design)

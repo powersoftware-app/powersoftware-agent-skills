@@ -1,6 +1,6 @@
 ---
 name: publish-license-product
-description: Publish a license-enabled software product end-to-end on the PowerSoftware platform (powersoftware.app / powersoftware.cn). Use when repeatedly listing/uploading license products, onboarding a partner account, or automating the product-publish flow. Covers user registration, partner application (with a mandatory human approval gate), cover/detail image + installer upload, and product submission.
+description: Publish a license-enabled software product end-to-end on the PowerSoftware platform (powersoftware.app / powersoftware.cn). Use when repeatedly listing/uploading license products, onboarding a partner account, or automating the product-publish flow. Covers both TRIAL_FIRST (try-before-buy) and PAY_FIRST (pay-before-use) license products, user registration, partner application (with a mandatory human approval gate), cover/detail image + installer upload, and product submission.
 ---
 
 # Publish a License Product (PowerSoftware)
@@ -22,9 +22,12 @@ payload rules, enums and error codes are in [reference.md](reference.md).
 - Node.js 18+.
 - Copy [`scripts/config.example.json`](scripts/config.example.json) → `scripts/config.local.json`
   and set `baseUrl`, `email`, `password`.
-  - Use the **CN site** `https://www.powersoftware.cn/frontApi` for scripted flows: login/register
-    there skip Cloudflare Turnstile. The overseas prod site requires a human `turnstileToken`
-    on register/login, which cannot be scripted headlessly.
+  - The default **baseUrl is the overseas prod site** `https://www.powersoftware.app/frontApi`
+    (the platform's primary site; CN users reach the same backend via `powersoftware.cn`).
+    Turnstile on login/register is currently disabled server-side, so scripted flows work
+    against `.app` directly. If a `captcha required` error ever reappears (Turnstile re-enabled),
+    switch `baseUrl` to the **CN site** `https://www.powersoftware.cn/frontApi`, whose
+    login/register skip Turnstile by design.
 - `config.local.json`, `.ps-session.json` and `assets/` are git-ignored — never commit them.
 
 Run all commands from the `scripts/` directory.
@@ -122,7 +125,8 @@ The product references media by `objectName`; nothing can be saved before upload
 injects the returned `objectName`s into the payload, then submits.
 
 ```bash
-node publish.mjs --spec ../templates/product.license.example.json
+node publish.mjs --spec ../templates/product.license.example.json            # TRIAL_FIRST 先用后付
+node publish.mjs --spec ../templates/product.license.payfirst.example.json   # PAY_FIRST 先付后用
 ```
 
 What it does under the hood (see [reference.md](reference.md) for the raw endpoints):
@@ -147,7 +151,10 @@ What it does under the hood (see [reference.md](reference.md) for the raw endpoi
 ### License-product rules the payload must satisfy
 
 A **license** product is `productForm: CLIENT_SOFTWARE` (or `PLUGIN`) with `licenseEnabled: true`.
-When `salesModel: TRIAL_FIRST` (try-before-buy):
+The sales model (`baseInfo.salesModel`) decides the payment shape — confirm it with the user
+before filling the spec:
+
+**`TRIAL_FIRST` (先用后付 — try before you buy):**
 
 - `licenseEnabled = true`, `licensePlatformPayment = true`, `trialDays` in 1–365,
   `receivePayment.productPrice = 0` (or omitted),
@@ -156,7 +163,21 @@ When `salesModel: TRIAL_FIRST` (try-before-buy):
 - `softwareVersion` must be `x.y.z`,
 - at least one executable package must exist.
 
-For `PAY_FIRST` buyout, `receivePayment.productPrice ≥ 1` (no ¥0 buyout).
+**`PAY_FIRST` (先付后用 — pay before you use):**
+
+- `licenseEnabled = true`; `salesModel: "PAY_FIRST"` (it is also the backend default when the
+  field is omitted),
+- `receivePayment.productPrice ≥ 1` — this is the upfront product price the buyer pays BEFORE
+  first use; a ¥0 buyout is rejected (`publish.mjs` pre-checks this locally),
+- **no** `trialDays` (only `TRIAL_FIRST` uses it; omit the field),
+- `licenseEditions` still ≥ 1 row and follows the same edition rules (unique
+  `code + billingPeriod`; prices strictly ascending when `licensePlatformPayment = true`);
+  per-edition `trialCount` may still grant count-based trials of an edition,
+- `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
+
+Use the matching template: [`product.license.example.json`](templates/product.license.example.json)
+(TRIAL_FIRST) / [`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json)
+(PAY_FIRST).
 
 On success the product enters `PENDING_RELEASE` (platform review) — that is expected; publishing
 to the storefront is a further operator action, not part of this skill.
@@ -198,7 +219,7 @@ was not returned, and where to read it (developer console → product page).
 | `images.size` | `introduce.images` must hold 3–20 images. |
 | `licenseEditions.periodDuplicate` | Two editions share the same `code`+`billingPeriod`. |
 | `licenseEditions.priceAscending` | Platform-payment edition prices not strictly increasing. |
-| `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch (see rules above). |
+| `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch: `PAY_FIRST` needs `productPrice ≥ 1`; `TRIAL_FIRST` needs `0` (see rules above). |
 | suffix / size rejected | Wrong `businessType`, non-whitelisted file type, or oversize file. |
 | `cannot determine the software form` | No `--form`, no `baseInfo.productForm`, and nothing analysable in the cwd → **ask the user** which form, then re-run with `--form <VALUE>`. |
 | `LICENSE product ... must be CLIENT_SOFTWARE or PLUGIN` | A license/TRIAL_FIRST product was given a non-client form → confirm the real form with the user (usually CLIENT_SOFTWARE) and re-run. |
@@ -208,4 +229,5 @@ was not returned, and where to read it (developer console → product page).
 - [reference.md](reference.md) — full endpoint list, enum values, payload schema, error codes.
 - [scripts/](scripts/) — `register.mjs`, `login.mjs`, `apply-partner.mjs`, `publish.mjs`, `lib.mjs`.
 - [templates/partner.example.json](templates/partner.example.json) — partner onboarding profile.
-- [templates/product.license.example.json](templates/product.license.example.json) — license product spec.
+- [templates/product.license.example.json](templates/product.license.example.json) — TRIAL_FIRST (先用后付) license product spec.
+- [templates/product.license.payfirst.example.json](templates/product.license.payfirst.example.json) — PAY_FIRST (先付后用) license product spec.
