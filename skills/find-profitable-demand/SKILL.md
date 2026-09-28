@@ -44,6 +44,9 @@ Two layers:
 - **Success = 产品力 × 共识力 × 传播力 × SEO力 × 品牌力** — SEO is one multiplier, not the whole equation.
 - **The low-hanging fruit is gone, but there is still fruit.** Don't despair that it's "too late";
   new words, new scenes and small unloved needs are still open every month.
+- **耐心 + 平常心 + 立刻行动.** 哥飞's recurring refrain (《给自己一点时间…多一点耐心》《出海的决心、耐心、
+  细心和平常心》《只要行动，就会有收获；只有行动，才会有收获》): the loop rewards persistence across many
+  small sites, not one clever bet — so *act now* on a small practice site rather than planning forever.
 
 ---
 

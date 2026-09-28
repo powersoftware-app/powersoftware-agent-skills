@@ -29,10 +29,11 @@ This is a **knowledge-only** skill: no scripts, no `npm install`, no Node needed
 
 - **Source repo**: [powersoftware-app/powersoftware-agent-skills](https://github.com/powersoftware-app/powersoftware-agent-skills)
 - **Source skill directory**: [`skills/plan-seo-site/`](https://github.com/powersoftware-app/powersoftware-agent-skills/tree/main/skills/plan-seo-site)
-- **Method source**: 哥飞 (GeFei) SEO public-account method + a live 哥飞 SEO Agent diagnosis of
-  `powersoftware.app`. The public-account article bodies sit behind a VIP wall (only ~20 recent
-  titles are on the public RSS mirror), so the methodology here is distilled from the recorded
-  diagnosis transcripts and the working notes, not a verbatim crawl.
+- **Method source**: 哥飞 (GeFei) SEO public-account method (distilled from 123 article titles + excerpts,
+  2026-09) + a live 哥飞 SEO Agent diagnosis of `powersoftware.app`. Article bodies are public to a real
+  browser on 微信公众号 but are **anti-scraped** (WeChat TCaptcha-gates scripted `fetch()`/`iframe` loads),
+  so the methodology here is distilled from titles/excerpts, the recorded diagnosis transcripts and the
+  working notes — not a verbatim crawl, and nothing is paywalled.
 - **Logo**: `assets/avatar.svg` — original artwork (magnifier + rising keyword bars, blue→indigo).
   No third-party asset reused.
 

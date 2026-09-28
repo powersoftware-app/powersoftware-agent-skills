@@ -29,9 +29,10 @@ This is a **knowledge-only** skill: no scripts, no `npm install`, no Node needed
 
 - **Source repo**: [powersoftware-app/powersoftware-agent-skills](https://github.com/powersoftware-app/powersoftware-agent-skills)
 - **Source skill directory**: [`skills/find-profitable-demand/`](https://github.com/powersoftware-app/powersoftware-agent-skills/tree/main/skills/find-profitable-demand)
-- **Method source**: distilled from a crawl (~120 titles + excerpts, 2026-09) of 哥飞's public-account
-  article list. Full article bodies sit behind his community/VIP wall, so the method is reconstructed
-  from titles, excerpts and the community's monthly digests — figures are *as reported*, not verified truth.
+- **Method source**: distilled from 123 article titles + excerpts harvested from 哥飞's public-account
+  article list (2026-09), plus one full body. The bodies are public to a real browser on 微信公众号 but are
+  **anti-scraped** (WeChat serves a TCaptcha shell to scripted `fetch()`/`iframe` loads), so they could not
+  be captured at scale — **nothing is paywalled**. Figures are *as reported by 哥飞/his members*, not verified truth.
 - **Logo**: `assets/avatar.svg` — original artwork (sprouting plant + magnifier over a coin, blue→indigo).
 
 ## Included

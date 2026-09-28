@@ -1,12 +1,16 @@
 # find-profitable-demand — Reference
 
 Supporting evidence for [`SKILL.md`](SKILL.md), distilled from 哥飞's public-account corpus
-(~120 article titles + excerpts crawled 2026-09). Every figure is **as reported by 哥飞 / his
+(123 article titles + excerpts harvested 2026-09). Every figure is **as reported by 哥飞 / his
 members** and is a *snapshot* illustrating **how to read a demand**, not live truth — re-verify
 before betting on it. Article titles are given so the reader can find the original.
 
-> Note on provenance: full article bodies sit behind 哥飞's community/VIP wall; only titles,
-> excerpts and the community's monthly digests are public. The method here is distilled from those.
+> Note on provenance: the method is distilled from the article **titles + excerpts** (plus one full
+> body). The full bodies live on 微信公众号 (`mp.weixin.qq.com`) and are public to a real browser, but
+> are **anti-scraped** — a canonical `/s?__biz=…&mid=…&sn=…` link serves a TCaptcha verification shell
+> to any scripted / automated / even same-origin `fetch()` or `iframe` load once the session is
+> rate-limited, so they could not be captured at scale here. **Nothing is paywalled** — the gap is
+> purely WeChat's bot-protection. Where a number matters to you, find the original by its title.
 
 ---
 
@@ -133,6 +137,7 @@ Tagged with the phase they best illustrate.
 
 - **AdSense 提交申请的小细节** (出海教程) — enough real content, clear nav + policy pages, don't pile
   duplicate/thin pages before review. A member's new site passed review on **day 13**.
+- **AdSense 运营实操清单**（哥飞有专文，按标题找原文）— ① 账号注册 / 网站审核踩坑《Adsense账号注册、审核、网站审核的一点经验分享》; ② 到帐必经的 **Pin 码 + 实名实地认证**流程《Adsense如何收取Pin码，如何上传文件进行实名实地认证》; ③ 上线前**快速估算一个网站的 Adsense 收入**《如何快速估算一个网站的Adsense广告收入？》; ④《从一个AI工具站最近7天Adsense不同国家收入数据分析对比告诉你为什么要出海》— 同样的 UV，美元 / 高 CPC 国家的广告收入远高于中文流量，这就是"出海赚美元"的算术根据。
 - 《我如何通过 SEO 和 Adsense 优化，把一个网站广告收入从每月八百多美元提升到每月两千多美元》 —
   same traffic, ~2.5× revenue from placement + traffic-quality tuning.
 - 《大白话讲清楚出海网站赚钱逻辑：为什么能赚钱？赚谁的钱？怎么赚？需要做什么？》 — the mental model of
