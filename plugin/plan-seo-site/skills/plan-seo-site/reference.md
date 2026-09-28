@@ -270,13 +270,14 @@ AITDK (on-page breakdown) · Search Console + Analytics · ChatGPT/Claude (conte
 
 ## §F — 哥飞 public corpus: the 79-article 公众号 archive (2023-07 → 2024-09)
 
-Source: local archive `gefei-seo-guide/` (79 articles + `_index.json`, grouped 01_养网站防老(13) /
+Source: local archive `gefei-seo-guide/` (the curator's private backup — **not bundled with this
+Skill**; 79 articles + `_index.json`, grouped 01_养网站防老(13) /
 02_SEO教程(24) / 03_Adsense(4) / 04_需求挖掘(14) / 05_建站(3) / 07_内链外链(1) / 08_AI工具(1) /
 09_内容(1) / 11_流量(3) / 13_案例(4) / 14_技术SEO(1) / 99_其他(10)). Everything below is **delta on
 §E** — only what §E doesn't already say. (The web.cafe column set — 65 titles incl. 谷歌SEO三字经,
 排名需要多久研究 — sits behind a login wall and is *not* in this archive.)
 
-### F.1 The full 51 wealth-password roots (§E.2 was 18 of them)
+### F.1 The full 51 wealth-password roots (§E.2 listed 19 of them)
 
 Complete list, each with meaning + user-intent + 3 collocations in the source article:
 `Translator · Generator · Example · Convert · Online · Downloader · Maker · Creator · Editor ·
@@ -290,10 +291,17 @@ don't floor it — 21–49 has more real picks), CPC>0.1, exclude "near me"**, d
 *Navigation* intent (brand-seeking words are useless to you), exclude porn terms, export CSV,
 compute kdroi (F.2).
 
+> Funnel note: these are the *enumeration* thresholds (cast a wide net across 51 roots). The final
+> *first-site* pick still passes §E.3's beginner bars (`KD<10, RD<10`, volume can be as low as
+> 100/mo), and §F.3's起步词 (`KD<29, ~10K/mo`) is the separate 保小图大 stepping-stone tier — three
+> stages of one funnel, not conflicting numbers.
+
 ### F.2 Word-judgment SOPs (concrete walkthroughs behind §E.3)
 
-- **kdroi in practice**: `kdroi = volume × CPC / KD`. Calculator example: 357 words exported,
-  keep 4 columns, `=B2*D2/C2`, sort desc → winners are hyper-specific long-tails
+- **kdroi in practice**: `kdroi = volume × CPC / KD` (= §E.3's "Optimization ROI", same formula).
+  Calculator example: 357 words exported,
+  keep 4 columns in order **B=volume, C=KD, D=CPC** (A=keyword), `=B2*D2/C2`, sort desc → winners
+  are hyper-specific long-tails
   (`audiobook speed calculator` 3177, `construction loan calculator` 806), not the head word.
 - **Search-intent in practice**: hover Google autocomplete at *every cursor position* of the seed
   word → collect ~40 suggestions → dedupe (~27 words) → feed the whole list to GPT with prompt
@@ -306,7 +314,7 @@ compute kdroi (F.2).
   ("how many…" SERP shows the answer → nothing left to win); ③ *video-SERP words* ("half double
   crochet" → all YouTube results — go make videos, don't build a site); ④ *CPC outliers are
   brand-help false positives* (`squarespace change page background color` $17 CPC, 20 vol —
-  filter vol≥600); ⑤ Semrush KD/volume lag → **KD from Ahrefs, volume verified on Trends** for new words.
+  filter vol>600); ⑤ Semrush KD/volume lag → **KD from Ahrefs, volume verified on Trends** for new words.
 - **Decline worked example (UUID)**: narrow via autocomplete → Ahrefs KD 71 sites-to-top-10 →
   Trends vs `GPTs` shows small & flat → top-3 occupants only 430K/130K/30K monthly visits → ROI
   too low, *don't do it*. (Checking a word is cheap; the output is sometimes "no".)
