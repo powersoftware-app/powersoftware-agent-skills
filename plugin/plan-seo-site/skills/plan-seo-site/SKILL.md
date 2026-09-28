@@ -233,3 +233,7 @@ Console + Analytics, submit Sitemap, set Robots.txt, optional structured data.
   - §D — the `powersoftware.app` case snapshot (findings, missing fields, execution order).
   - §E — the condensed 哥飞 method handbook (mindset, sourcing, wealth-password roots, ROI formula,
     beginner bars, small→big strategy, TDH, categorize-and-list, Google's pipeline, tools, learning path).
+  - §F — delta from the full 79-article 公众号 archive (all 51 wealth-password roots + Semrush filter
+    params, word-judgment SOPs w/ kdroi walkthrough & search-intent三分, 保小图大 ladder, on-page TD/
+    meta/SERP-样式 recipes, Googlebot & canonical/robots normalization, programmatic pacing, failure
+    lessons like ChatGPT4o.ai, multilingual static recipe).

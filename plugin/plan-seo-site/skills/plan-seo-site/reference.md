@@ -265,3 +265,190 @@ AITDK (on-page breakdown) · Search Console + Analytics · ChatGPT/Claude (conte
 - **Wk 3–4**: ship the first site via the 「养网站防老」 steps, launch + submit GSC, start links.
 - **Mo 2–3**: study monetization, iterate from data, review success cases.
 - **Mo 4+**: replicate what worked, build a site matrix.
+
+---
+
+## §F — 哥飞 public corpus: the 79-article 公众号 archive (2023-07 → 2024-09)
+
+Source: local archive `gefei-seo-guide/` (79 articles + `_index.json`, grouped 01_养网站防老(13) /
+02_SEO教程(24) / 03_Adsense(4) / 04_需求挖掘(14) / 05_建站(3) / 07_内链外链(1) / 08_AI工具(1) /
+09_内容(1) / 11_流量(3) / 13_案例(4) / 14_技术SEO(1) / 99_其他(10)). Everything below is **delta on
+§E** — only what §E doesn't already say. (The web.cafe column set — 65 titles incl. 谷歌SEO三字经,
+排名需要多久研究 — sits behind a login wall and is *not* in this archive.)
+
+### F.1 The full 51 wealth-password roots (§E.2 was 18 of them)
+
+Complete list, each with meaning + user-intent + 3 collocations in the source article:
+`Translator · Generator · Example · Convert · Online · Downloader · Maker · Creator · Editor ·
+Processor · Designer · Compiler · Analyzer · Evaluator · Sender · Receiver · Interpreter ·
+Uploader · Calculator · Sample · Template · Format · Builder · Scheme · Pattern · Checker ·
+Detector · Scraper · Manager · Explorer · Dashboard · Planner · Tracker · Recorder · Optimizer ·
+Scheduler · Converter · Viewer · Extractor · Monitor · Notifier · Verifier · Simulator ·
+Assistant · Constructor · Comparator · Navigator · Syncer · Connector · Cataloger · Responder`.
+Usage: feed a root into Semrush Keyword Magic Tool, filter **vol>600, KD 0–29 (later advice:
+don't floor it — 21–49 has more real picks), CPC>0.1, exclude "near me"**, deselect
+*Navigation* intent (brand-seeking words are useless to you), exclude porn terms, export CSV,
+compute kdroi (F.2).
+
+### F.2 Word-judgment SOPs (concrete walkthroughs behind §E.3)
+
+- **kdroi in practice**: `kdroi = volume × CPC / KD`. Calculator example: 357 words exported,
+  keep 4 columns, `=B2*D2/C2`, sort desc → winners are hyper-specific long-tails
+  (`audiobook speed calculator` 3177, `construction loan calculator` 806), not the head word.
+- **Search-intent in practice**: hover Google autocomplete at *every cursor position* of the seed
+  word → collect ~40 suggestions → dedupe (~27 words) → feed the whole list to GPT with prompt
+  「关键词：搜索意图：」 format, then ask per-word follow-ups ("what service does the user actually
+  want") and "how should the page satisfy it".
+- **Intent → page-type mapping (3 states)**: 解惑 → article/ explainer page · 下载 → give the file ·
+  办事 → working tool on-page. Goal: the user's job is done **in your one page** without going back.
+- **Kill list (Semrush traps)**: ① *seasonal/spike words* — always verify on Google Trends over the
+  full year (`fantasy football team names` 53.8K but one season only); ② *Google answers directly*
+  ("how many…" SERP shows the answer → nothing left to win); ③ *video-SERP words* ("half double
+  crochet" → all YouTube results — go make videos, don't build a site); ④ *CPC outliers are
+  brand-help false positives* (`squarespace change page background color` $17 CPC, 20 vol —
+  filter vol≥600); ⑤ Semrush KD/volume lag → **KD from Ahrefs, volume verified on Trends** for new words.
+- **Decline worked example (UUID)**: narrow via autocomplete → Ahrefs KD 71 sites-to-top-10 →
+  Trends vs `GPTs` shows small & flat → top-3 occupants only 430K/130K/30K monthly visits → ROI
+  too low, *don't do it*. (Checking a word is cheap; the output is sometimes "no".)
+- **New-word rule**: a word is "new" if its Trends first-appearance is **≤12 months** back (set
+  range from 2022-01-01 to today, narrow to find the exact birth date — ChatGPT = 2022-11-30).
+  New words = everyone on the same starting line; speed beats authority.
+- **Fresh-crawler probes**: `site:domain` + time filter "Past hour" shows how often Googlebot
+  visits a site (V2EX: very often → good place to leave your link). `vercel.app` subdomains in
+  Similarweb → Organic landing pages → 12m → check **"newly discovered"** = live proof of new-word
+  demand before anyone ranks it.
+
+### F.3 保小图大 — the small-word-to-big-word growth ladder (§E.3 stated the principle; this is the mechanism)
+
+1. Beginner village: pick a KD<29, ~10K/mo word, **register a domain containing the keyword**
+   (domain-with-keyword is itself a ranking lever; keep URLs keyworded too), build one
+   举全站之力 page (even a single-page site should be 十几屏 of related questions covered).
+2. Once ranked (even top-3), **add sibling words**: title + homepage sections + categorized inner
+   pages for each sibling. Google re-evaluates; existing small-word authority transfers.
+3. When siblings hold, **add the parent word** the same way. The original small-word domain is fine.
+4. Authority ladder to remember when choosing placement: `主域名 > 子域名 > 子目录 > 内页`.
+5. Portfolio math (the actual strategy): 10 sites × $1k/mo beats chasing one $10k site.
+   A precise-traffic site with ~10K visits/mo can clear $1k AdSense — 看得上小钱才能赚大钱.
+
+### F.4 On-page rules beyond §E.4
+
+- **TD templates** — site home: `网站名-Slogan-关键词1-关键词2`; subdirectory home:
+  `子栏目名-子关键词1-子关键词2-网站名`; inner page: `内页功能-子栏目名-网站名`. Description:
+  plain sentences describing what the page gives; add a CTA line ("Learn…"). Keywords meta: omit.
+  Title 50–60 chars, keyword leftmost, **append brand/site name on every page** (even if truncated).
+  H1 may equal Title when you can't write a better one.
+- **Headings discipline**: exactly one H1 per page; H2s multiple; H3 under each H2; headings are
+  the page skeleton for Google's semantic parse *and* a preview for users — add an in-page TOC on
+  long pages. Show a TOC where useful; never sequential empty headings.
+- **Meta-tags that matter (the 10)**: Title · Description (150–160 chars, CTR not rank) · Headings ·
+  img `alt` (accessibility + Google-Images traffic; big descriptive images on the page → gallery/
+  thumbnail SERP features) · `rel="nofollow"` on UGC/paid outbound links (pair with
+  `noopener noreferrer`) · per-page robots meta (`noindex` for admin/thin pages — don't accidentally
+  block important ones) · canonical (F.5) · JSON-LD schema (Google markup helper
+  `google.com/webmasters/markup-helper`) · Open Graph (`og:title/url/description/image(+alt/w/h)`;
+  Twitter cards separate) · `viewport` (mobile-friendliness ≈ 5% of ranking factors, indirect but real).
+- **Restructuring a live site**: the golden rule — **never change existing URLs** (indexed +
+  externally linked). New demand → new pages under the old domain's subdirectories (act like a new
+  site without a new domain). Fix in place only: TD quality, internal-link tree, missing sitemap,
+  missing canonical, heading structure. Click depth: hard cap 4 from home, ideally ≤3.
+- **Internal-link checklist** (beyond §E.4): text links, never image-only; anchor = target page's
+  keyword phrase; new page appears on the **home latest list for ≥5 days**; when shipping a new
+  page, add links *from* it to old key pages and *from* old pages *to* it; every category lists all
+  its inner pages; every inner page links up (parent category) and home; footer carries key pages.
+  Result: sitelinks in SERP (Google extracts frequently-clicked inner links as mini-navigation).
+- **SERP-feature recipes (10 styles)**: mini-nav sitelinks ← home links to high-traffic inner pages ·
+  sitelinks searchbox ← prominent site search · FAQ accordion ← on-page Q&A list · gallery /
+  right-thumbnail ← one big image with alt · **rating stars** ← one on-page rating + aggregate
+  JSON-LD (users read it as Google's score of the page — highest CTR trick, "样式9") · knowledge
+  box footer ← structured key/value table on page · image-pack ← image-intent query + alt'd big
+  images. Feed Google JSON-LD (`application/ld+json`) per its structured-data docs instead of
+  hoping it extracts.
+
+### F.5 Googlebot mechanics & normalization (delta on §E.5 / §C)
+
+- Crawler = **GET → raw HTML → parse text + extract links**; it does *not* run JS for small sites
+  (render service is a privilege for big useful sites). Hence: SSR mandatory; tool sites still need
+  textual descriptions (Google won't execute your tool to learn what it does — it trusts-then-verifies
+  via user behavior, demoting overstated copy).
+- **JS language-switching voids multilingual SEO**: URL unchanged → only one language ever indexed.
+  Language must live in the URL (subdirectory prefixes).
+- Sitemap = a *suggestion* Google may ignore; it prefers crawling links. Counter-example that
+  scales: **100K+ pages indexed in <1 month with no sitemap at all** — home always lists newest
+  content + one paginated "all pages" page. Crawl budget is earned by freshness, not by XML.
+- **canonical rules**: purpose is duplicate *URLs* (www vs apex, `/x/` vs `/x/index.php`, tracking
+  params `?r=reddit`/`?via=ls`), not duplicate content. Every page self-references **its own**
+  canonical; **never point the whole site at home**; each language variant canonicals to *itself*
+  (`/en/shequn/` → itself, not `/shequn/`). With correct canonical, all parameter-variant backlink
+  equity consolidates to one URL. Pick one host: small site → bare domain main, www 301→bare; large
+  site with cookie-safety needs → www main, bare 301→www; **always one 301 hop, no double jump**.
+- **robots.txt in multilingual sites**: a `Disallow: /people/` only covers the default locale —
+  write **one line per language prefix** (`/ja/people/`, `/fr/people/`, …), update whenever a locale
+  is added; never use `/*/people/` wildcards (collateral blocks like `/abc/def/people/`). Rule of
+  thumb: any page not built for traffic should be blocked from crawl. (Next.js: generate robots.ts.)
+- **Index-acquisition launch sequence** (the 48h proof: domain reg 7-20 → first Google traffic 7-21
+  → #1 ranking by day 45): ① GA snippet in a `display:none` div at the very end of `<body>`
+  (never let analytics block render); ② sitemap + GSC submission; ③ drop the link where Googlebot
+  camps (V2EX post about the product = 10-year-old trick, still works because V2EX's Google weight
+  grew) — fastest 1h, normally ≤1 day; if days pass with nothing, read GSC's coverage warnings for
+  quality/noindex faults before anything else.
+- **The ranking summary in three lines** (哥飞's compression): ① title/h1/on-page keywords get the
+  page *into the candidate pool* for the query; ② backlinks get it *into the top 10*; ③ site
+  experience (dwell, bounce, pogo-sticking) *decides its position* there. Consequence: **nofollow
+  backlinks still count** — Google changed the algorithm (organic shares are often nofollow); take
+  every link you can get, don't optimize for dofollow only.
+
+### F.6 Content-type tool sites & programmatic SEO (delta on §E.8)
+
+- **Content-type AI tool site flywheel** (哥飞's named pattern): free tool → user output published
+  to a public plaza → real-user pages indexed → search/image traffic → new users. Monetize as
+  free-tool + paid value-add (HD download / keep private / no watermark). Build it **templated** —
+  one codebase relaunches as sticker / avatar / video site; input×output can be text/image/video/URL → page.
+  This is *not* spam in Google's eyes: real tool + real UGC serving real queries.
+- **Henry's tree content strategy** (zero-experience elite dev, revenue doubling monthly): home
+  targets the hard head keyword but *won't rank at first* — so drill **L2 words into subdirectories,
+  L3 words into one-page-one-keyword inner pages**, ship them one at a time and *win each before the
+  next*; watch L2 dirs gain rankings, then the home head word; then expand L4 and sideways channels.
+  (Same ladder as §E.3 small→big, but expressed as site architecture.)
+- **Programmatic without AI text** (distance.to: 12.97M visits/mo, 1.29M indexed pages): a tiny
+  demand ("distance from X to Y") × combinatorial entities (200+ countries → 40K pairs; down to
+  states/cities → millions). One template + **structured** DB rows (plain text won't compose) +
+  dynamic render per request + ~10min cache; pages are pointers, not files. Data: plan schema first,
+  scrape public sources (never copyrighted/private), merge multiple sources. Scale-up SOP:
+  ship **10 pages/day**, check GSC — are they crawled, do they surface queries? Tune the template
+  until yes, then 100/day → 200 → 500 → 1000 as crawl appetite proves out. Don't let "most of the
+  description is identical" across pages; every page answers a query someone actually types.
+  Sub-domain vs sub-directory for locales: both work, but **new sites: sub-directory** — cold-start
+  cheaper (even Canva does `/ja_jp/…`).
+- **The long-page pattern** (kayak `car rental nyc` page: ~12 keyword-adjacent modules — form, why
+  us, price tiers, tips, FAQs, reviews/directory, locations, guide list, when-to-book, brands,
+  vehicle types — ≈620K Google clicks/yr from one URL): don't fear length; fear irrelevance.
+  Modules each carry their own data + copy, all orbiting the one keyword.
+- **Failure lesson (ChatGPT4o.ai, 哥飞's own)**: a "latest Q&As" home module that leaked *full text*
+  turned the home from 400 to 3,000 words → core keyword density diluted, semantic read drifted
+  away from GPT-4o → Google cut impressions and ranking; removing the module didn't recover fast.
+  Rule: home lists should carry **titles/anchors only**, keep body text on the inner pages; guard
+  home-topic purity as a P0 asset. Corollary — Google likes pages that are *long on the keyword's
+  facets* but *short on everything else*.
+- **"Features Google likes" audit list (15)**: fast load · mobile-friendly · good internal-link
+  structure (nav+breadcrumb+home latest-list) · long dwell · low bounce · pages/session ·
+  original (no scraping; rewrite via GPT in your own template) · authoritative (whole-site depth on
+  one topic — big sites' inner pages can't out-cover a dedicated site) · useful · **topically
+  coherent** (all pages relate to the core keyword — not more pages, but *related* pages) ·
+  regularly updated · tool pages carry text · per-page TD · proper H tree · img alt.
+
+### F.7 Multilingual static recipe (pre-framework era, still the semantics to replicate)
+
+Pick locales by **per-country volume of the word itself** in Semrush (phone-number-generator: GH/US/
+NG/UK/IN/PH all English-speaking → English alone suffices — verify before translating anything).
+Subdirectory = ISO 639-1 code (`/hi/`, `/tl/`); language switcher labeled in the language's own name
+(हिन्दी / Filipino); each locale page: `lang` attr swapped, styles path `../`, cross-language links
+via `../<code>/<same-page>`; translate TD + visible text (URLs/filenames stay English-keyworded);
+**back-translation check**: have GPT translate the result *return to English* and compare.
+
+### F.8 What's still gated
+
+The web.cafe columns (养网站防老 11 · 进阶教程 10 · 挖掘需求 18 · 新手入门 17 · 高手分享 9 = 65
+articles) incl. 谷歌SEO三字经(注解版) and the Ahrefs time-to-rank study are login-gated and **not
+in this archive**; key numbers claimed there (51词, 趋势找新词, 内链内容型工具站, 排名时长) are
+reconstructed here from the 公众号 originals. If raw text is later unlocked, diff against F.1–F.7
+rather than re-derive.
