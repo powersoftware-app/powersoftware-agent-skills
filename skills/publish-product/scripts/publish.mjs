@@ -95,6 +95,39 @@ if (baseInfo.salesModel !== 'TRIAL_FIRST' && PRICE_REQUIRED_FORMS.includes(form)
 baseInfo.productForm = form; // back-fill so the payload carries the resolved form
 ok(`productForm = ${form} (source: ${formSource}).`);
 
+// ---- Product-name brandability advisory (SEO 品牌词: 短 / 独特 / 可拼写 / 可被搜) ----------------
+// ADVISORY ONLY — the platform does NOT validate name quality; a purely descriptive name still
+// publishes fine. We surface concrete reasons so the agent can raise it ONCE before submitting.
+// The final naming call belongs to the user. Silencable with --ok-name (for re-runs / acknowledged names).
+function nameQualityIssues(raw) {
+  const issues = [];
+  const s = String(raw ?? '').trim();
+  if (!s) return issues; // empty name is a hard platform error, not a naming tip
+  const cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+  const latinWords = (s.match(/[A-Za-z][A-Za-z0-9]*/g) || []);
+  const GENERIC = ['\u670d\u52a1', '\u8f6f\u4ef6', '\u5de5\u5177', '\u52a9\u624b', '\u5e73\u53f0', '\u7cfb\u7edf', '\u7ba1\u5bb6', '\u5927\u5e08', '\u795e\u5668', '\u7cbe\u7075', '\u63d2\u4ef6', '\u5ba2\u6237\u7aef',
+    'service', 'services', 'software', 'tool', 'tools', 'assistant', 'platform', 'system', 'manager', 'app'];
+  const low = s.toLowerCase();
+  const hits = [...new Set(GENERIC.filter((t) => low.includes(t.toLowerCase())))];
+  if (cjk > 6 || (cjk === 0 && latinWords.length > 3)) {
+    issues.push('\u504f\u957f\u3001\u8bfb\u8d77\u6765\u50cf\u4e00\u53e5\u529f\u80fd\u63cf\u8ff0\uff08\u54c1\u724c\u540d\u5b9c\u77ed\uff1a\u4e2d\u6587 \u22646 \u5b57 / \u82f1\u6587 \u22643 \u8bcd\uff09\uff0c\u7528\u6237\u590d\u8ff0\u548c\u641c\u7d22\u65f6\u6253\u4e0d\u5168');
+  }
+  if (hits.length) {
+    issues.push(`\u542b\u901a\u7528/\u63cf\u8ff0\u6027\u8bcd\u300c${hits.join('\u3001')}\u300d\u2014\u2014\u8fd9\u4e9b\u8bcd\u4eba\u4eba\u5728\u7528\uff0cGoogle \u96be\u628a\u6d41\u91cf\u805a\u5408\u6210\u201c\u4f60\u201d\u8fd9\u4e2a\u54c1\u724c\u5b9e\u4f53\uff0c\u4e14\u7b49\u4e8e\u548c\u5168\u7ad9\u62a2\u8bcd`);
+  }
+  return issues;
+}
+const nameIssues = args['ok-name'] ? [] : nameQualityIssues(baseInfo.productName);
+if (nameIssues.length) {
+  console.log(
+    '\n\u26a0 \u4ea7\u54c1\u540d\u54c1\u724c\u6027\u63d0\u793a / Product-name advisory\uff08\u4e0d\u5f71\u54cd\u63d0\u4ea4\uff0c\u662f\u5426\u6539\u540d\u7531\u4f60\u5b9a\uff09:\n' +
+    `  \u5f53\u524d productName = '${baseInfo.productName}'\n` +
+    nameIssues.map((i) => `  - ${i}`).join('\n') + '\n' +
+    '  \u2192 \u5efa\u8bae\uff1a\u6ce8\u518c\u540d\u53ef\u4e0d\u52a8\uff0c\u4f46\u8865\u4e00\u4e2a\u77ed\u3001\u72ec\u7279\u3001\u53ef\u62fc\u5199\u7684\u54c1\u724c\u522b\u540d\uff08\u5982 SchemaSync\uff09\u7528\u4e8e\u843d\u5730\u9875/\u8be6\u60c5\u9875\u951a\u6587\u672c\u4e0e\u5916\u94fe\uff0c\u957f\u671f\u5582\u54c1\u724c\u5b9e\u4f53\u3002\n' +
+    '  \u2192 \u8ba4\u53ef\u73b0\u540d\u5e76\u8df3\u8fc7\u672c\u63d0\u793a\uff1a\u52a0 --ok-name \u91cd\u8dd1\u3002\n'
+  );
+}
+
 // ---- Phase 4: upload assets, collect objectNames ------------------------------
 
 if (assets.coverImage) {

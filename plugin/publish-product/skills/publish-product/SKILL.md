@@ -222,6 +222,21 @@ No `licenseEnabled` / `licenseEditions` / `licensePlatformPayment` fields — se
 On success the product enters `PENDING_RELEASE` (platform review) — that is expected; publishing
 to the storefront is a further operator action, not part of this skill.
 
+### Product-name advisory (brandability / 品牌词)
+
+`publish.mjs` prints a **non-blocking** warning when `productName` reads like a feature
+description rather than a brand — i.e. it is long (中文 >6 字 / 英文 >3 词) or contains generic
+tokens (`服务 / 软件 / 工具 / 助手 / service / software / tool / …`). This is SEO guidance, **not** a
+platform rule: a descriptive name still publishes fine, and the final naming call is the user's.
+
+When it fires, relay it to the user ONCE. Landing pages capture *demand-word* traffic (a stranger
+searching the job to be done); the product name captures *brand-word* traffic (a returning user or
+someone who heard the name and searches it). A long/generic name means that second channel never
+opens. Recommended fix that does NOT require renaming the registered product: **coin a short,
+distinctive, spellable brand alias** (e.g. `SchemaSync`) and use it as the anchor text on the
+landing/detail pages and backlinks, so authority accumulates onto one searchable entity. To silence
+the warning on re-runs (name already acknowledged), add `--ok-name`.
+
 ### Phase 6 — Surface the `productUniqueCode` and apply it to the workspace
 
 A successful `POST /product/submit` returns `{ productId, productUniqueCode }`. The
