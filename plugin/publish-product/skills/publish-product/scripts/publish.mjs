@@ -1,6 +1,8 @@
 // publish.mjs — upload the spec's local assets, inject their objectNames, then submit.
 //   node publish.mjs --spec ../templates/product.license.example.json            (TRIAL_FIRST 先用后付)
 //   node publish.mjs --spec ../templates/product.license.payfirst.example.json    (PAY_FIRST 先付后用)
+//   node publish.mjs --spec ../templates/product.license.quota.example.json           (QUOTA 按量额度 · TRIAL_FIRST)
+//   node publish.mjs --spec ../templates/product.license.quota.payfirst.example.json   (QUOTA 按量额度 · PAY_FIRST)
 //   node publish.mjs --spec ../templates/product.server.example.json             (SERVER_SOFTWARE 服务端软件)
 //   node publish.mjs --spec ../templates/product.digital-good.example.json        (DIGITAL_GOOD 数字商品)
 //   node publish.mjs --spec ../templates/product.promotion.example.json           (ONLY_PROMOTION 仅推广)
@@ -80,6 +82,41 @@ const isLicense = baseInfo.licenseEnabled === true || baseInfo.salesModel === 'T
   || (Array.isArray(baseInfo.licenseEditions) && baseInfo.licenseEditions.length > 0);
 if (isLicense && !LICENSE_FORMS.includes(form)) {
   fail(`a LICENSE product (licenseEnabled / TRIAL_FIRST) must be ${LICENSE_FORMS.join(' or ')} — got '${form}'. Ask the user to correct the form, then re-run with --form CLIENT_SOFTWARE (or PLUGIN).`);
+}
+// ---- License billing model (授权计费模型): EDITION 版本分层（默认） / QUOTA 按量额度包 -------------
+// Mirrors ProductSchema superRefine so an invalid spec fails locally with an actionable message
+// instead of a remote i18n error. Absence of the field means EDITION (存量语义), which is fine.
+const pricingModel = baseInfo.licensePricingModel ?? 'EDITION';
+if (isLicense && pricingModel !== 'EDITION' && pricingModel !== 'QUOTA') {
+  fail(`invalid licensePricingModel '${pricingModel}' — must be 'EDITION' (版本分层：按时长/买断分档，升级可补差价) or 'QUOTA' (按量额度：售卖额度包，用完再买、额度累加), or omit it (= EDITION).`);
+}
+const isQuota = isLicense && pricingModel === 'QUOTA';
+if (isQuota) {
+  // QUOTA：每行版本必须带 quotaAmount（额度包数量 1–9999999）；行唯一键 = code|billingPeriod|quotaAmount；
+  // 额度包价格不要求递增（递增是 EDITION 专属规则）；trialDays 可缺省（按次试用用 trialCount）。
+  const editions = Array.isArray(baseInfo.licenseEditions) ? baseInfo.licenseEditions : [];
+  if (editions.length < 1) {
+    fail('QUOTA (按量额度) needs ≥1 licenseEditions row — each row is a quota pack (额度包). Add packs, e.g. { code, billingPeriod, quotaAmount, productPrice }.');
+  }
+  const keys = new Set();
+  for (const e of editions) {
+    if (e.quotaAmount == null || Number(e.quotaAmount) < 1) {
+      fail(`QUOTA edition '${e.code ?? '?'}' is missing quotaAmount — every pack row needs quotaAmount >= 1 (次数，如 20/100).`);
+    }
+    const key = `${e.code ?? ''}|${e.billingPeriod ?? 'PERMANENT'}|${e.quotaAmount}`;
+    if (keys.has(key)) {
+      fail(`licenseEditions duplicate row '${key}' — under QUOTA the unique key is code + billingPeriod + quotaAmount (同一版本+有效期可配多个额度包).`);
+    }
+    keys.add(key);
+  }
+} else if (isLicense && pricingModel === 'EDITION') {
+  // EDITION（版本分层）试用只按天：trialCount 不是该模型的维度，后端表单不展示、落库不注入，随请求下发只会造成隐性配置。
+  const withCount = (baseInfo.licenseEditions ?? []).filter((e) => Number(e.trialCount) > 0);
+  if (withCount.length) {
+    const stripped = baseInfo.licenseEditions.map((e) => { if (Number(e.trialCount) > 0) { const { trialCount, trialCountPeriod, ...rest } = e; return rest; } return e; });
+    baseInfo.licenseEditions = stripped;
+    ok(`EDITION（版本分层）不启用按次试用：已自动忽略 ${withCount.length} 行的 trialCount/trialCountPeriod（按次试用请用 licensePricingModel="QUOTA"，按天试用用 trialDays）。`);
+  }
 }
 // Price pre-check mirrors the platform validator (ProductSchema superRefine): for
 // CLIENT_SOFTWARE / SERVER_SOFTWARE / DIGITAL_GOOD / PLUGIN that are NOT TRIAL_FIRST (PAY_FIRST or

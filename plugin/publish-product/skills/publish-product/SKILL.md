@@ -44,6 +44,7 @@ Copy this checklist and mark progress. **Phase 2 is a hard stop.**
 - [ ] Phase 2: Apply as partner  ⛔ then WAIT for manual operator approval
 - [ ] Phase 3: Re-login to acquire the DEVELOPER role
 - [ ] Phase 3.5: Determine the software form (productForm) — detect from the project, else ASK THE USER
+- [ ] Phase 3.6: For license products, confirm the billing model (licensePricingModel) — EDITION 版本分层 or QUOTA 按量额度
 - [ ] Phase 4: Upload assets (cover + 3–20 detail images + installer) → collect objectNames
 - [ ] Phase 5: Submit the product for review
 - [ ] Phase 6: Surface the productUniqueCode and apply it to the workspace's license integration
@@ -131,6 +132,28 @@ listing all five, e.g.:
 
 Only after the user answers, re-run `node publish.mjs --spec … --form <their choice>`.
 
+### Phase 3.6 — License billing model: 版本分层 vs 按量额度 (`licensePricingModel`)
+
+Only for **license** products (`licenseEnabled: true`). `baseInfo.licensePricingModel` chooses how
+the license is sold. **ASK the user which model fits their product — do not default silently**
+(absence of the field = `EDITION`):
+
+| model | 中文 | how it sells | trial dimension | upgrade |
+|---|---|---|---|---|
+| `EDITION`（缺省） | 版本分层 | editions × `billingPeriod`（按时长/买断分档，如 BASIC/PRO × MONTHLY/YEARLY/PERMANENT） | **day-based** — `trialDays` only; `trialCount` is NOT a dimension of this model | 已购抵扣/补差价 — `licenseDeductionEnabled` defaults **true** |
+| `QUOTA` | 按量额度 | quota packs — every `licenseEditions` row is a pack with `quotaAmount`（如 20 次 / 100 次）; buy-again **stacks** onto the remaining balance | **count-based** — per-edition `trialCount` (+ optional `trialCountPeriod`: `TOTAL` 累计 / `MONTHLY` 每自然月); `trialDays` not required | 不补差价 — `licenseDeductionEnabled` is forced off server-side (全价复购) |
+
+QUOTA row rules (mirrored by `publish.mjs` pre-checks): every edition row MUST carry
+`quotaAmount ≥ 1`; the unique key is `code + billingPeriod + quotaAmount` (the same edition may
+offer several packs, e.g. 20/100/500 under one `code`); pack prices are **not** required to
+ascend (ascending is an EDITION-only rule). Do NOT set `licenseDeductionEnabled: true` under
+QUOTA (ignored); under EDITION set it `false` only if the user explicitly wants full-price upgrades.
+
+Templates: EDITION → [`product.license.example.json`](templates/product.license.example.json) /
+[`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json);
+QUOTA → [`product.license.quota.example.json`](templates/product.license.quota.example.json) /
+[`product.license.quota.payfirst.example.json`](templates/product.license.quota.payfirst.example.json).
+
 ### Phase 4 → 5 — Upload assets, then submit (ordering is mandatory)
 
 The product references media by `objectName`; nothing can be saved before upload succeeds.
@@ -138,8 +161,10 @@ The product references media by `objectName`; nothing can be saved before upload
 injects the returned `objectName`s into the payload, then submits.
 
 ```bash
-node publish.mjs --spec ../templates/product.license.example.json            # TRIAL_FIRST 先用后付（授权）
-node publish.mjs --spec ../templates/product.license.payfirst.example.json   # PAY_FIRST 先付后用（授权）
+node publish.mjs --spec ../templates/product.license.example.json            # TRIAL_FIRST 先用后付（授权 · EDITION 版本分层）
+node publish.mjs --spec ../templates/product.license.payfirst.example.json   # PAY_FIRST 先付后用（授权 · EDITION 版本分层）
+node publish.mjs --spec ../templates/product.license.quota.example.json          # TRIAL_FIRST（授权 · QUOTA 按量额度包）
+node publish.mjs --spec ../templates/product.license.quota.payfirst.example.json # PAY_FIRST（授权 · QUOTA 按量额度包）
 node publish.mjs --spec ../templates/product.server.example.json             # SERVER_SOFTWARE 服务端
 node publish.mjs --spec ../templates/product.digital-good.example.json       # DIGITAL_GOOD 数字商品
 node publish.mjs --spec ../templates/product.promotion.example.json          # ONLY_PROMOTION 仅推广
@@ -174,10 +199,13 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
 
 **`TRIAL_FIRST` (先用后付 — try before you buy):**
 
-- `licenseEnabled = true`, `licensePlatformPayment = true`, `trialDays` in 1–365,
-  `receivePayment.productPrice = 0` (or omitted),
-- `licenseEditions` has ≥ 1 row; with platform payment, prices must be **strictly ascending**;
-  `(code + billingPeriod)` combos must be unique,
+- `licenseEnabled = true`, `licensePlatformPayment = true`,
+  under **EDITION**: `trialDays` in 1–365 (day-based trial is the EDITION trial dimension);
+  under **QUOTA**: omit `trialDays`, use per-edition `trialCount` instead (see Phase 3.6),
+- `receivePayment.productPrice = 0` (or omitted),
+- `licenseEditions` has ≥ 1 row; with platform payment (EDITION), prices must be **strictly
+  ascending**; EDITION unique key `(code + billingPeriod)`, QUOTA unique key
+  `(code + billingPeriod + quotaAmount)` with `quotaAmount ≥ 1` on every row,
 - `softwareVersion` must be `x.y.z`,
 - at least one executable package must exist.
 
@@ -188,17 +216,24 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
 - `receivePayment.productPrice ≥ 1` — this is the upfront product price the buyer pays BEFORE
   first use; a ¥0 buyout is rejected (`publish.mjs` pre-checks this locally),
 - **no** `trialDays` (only `TRIAL_FIRST` uses it; omit the field),
-- `licenseEditions` still ≥ 1 row and follows the same edition rules (unique
-  `code + billingPeriod`; prices strictly ascending when `licensePlatformPayment = true`);
-  per-edition `trialCount` may still grant count-based trials of an edition,
+- `licenseEditions` still ≥ 1 row. Under **EDITION**: unique `code + billingPeriod`; prices
+  strictly ascending when `licensePlatformPayment = true`; the trial dimension is day-based only —
+  `trialCount` is NOT used (PAY_FIRST has no trial at all). Under **QUOTA**: every row carries
+  `quotaAmount`; prices not required to ascend; per-edition `trialCount` may grant count-based
+  trials of a pack,
 - `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
 
-Templates: [`product.license.example.json`](templates/product.license.example.json) (TRIAL_FIRST) /
-[`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json) (PAY_FIRST).
+Templates: [`product.license.example.json`](templates/product.license.example.json) (TRIAL_FIRST /
+EDITION) · [`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json)
+(PAY_FIRST / EDITION) · [`product.license.quota.example.json`](templates/product.license.quota.example.json)
+(TRIAL_FIRST / QUOTA) · [`product.license.quota.payfirst.example.json`](templates/product.license.quota.payfirst.example.json)
+(PAY_FIRST / QUOTA).
 
 #### Non-license products
 
 No `licenseEnabled` / `licenseEditions` / `licensePlatformPayment` fields — set none of them.
+(Version tiering and quota packs are **license** billing models only — a non-license product can
+only sell a flat `receivePayment.productPrice`.)
 
 **`SERVER_SOFTWARE` (服务端软件)** — [`product.server.example.json`](templates/product.server.example.json):
 
@@ -272,8 +307,10 @@ was not returned, and where to read it (developer console → product page).
 | `need_developer_role` | Not logged in as an approved partner → finish Phase 2, then re-login (Phase 3). |
 | `coverImage.require` | Cover `objectName` missing — Phase 4 upload didn't complete. |
 | `images.size` | `introduce.images` must hold 3–20 images. |
-| `licenseEditions.periodDuplicate` | Two editions share the same `code`+`billingPeriod`. |
-| `licenseEditions.priceAscending` | Platform-payment edition prices not strictly increasing. |
+| `licenseEditions.periodDuplicate` | Two editions share the same unique key — `code`+`billingPeriod` under EDITION, `code`+`billingPeriod`+`quotaAmount` under QUOTA. |
+| `licenseEditions.priceAscending` | Platform-payment EDITION edition prices not strictly increasing (QUOTA packs are exempt). |
+| `quotaAmount` missing / `< 1` | QUOTA (按量额度) pack row without a quota count → set `quotaAmount` (e.g. 20/100) on every `licenseEditions` row. |
+| `invalid licensePricingModel` | Not `EDITION`/`QUOTA` → use one of them or omit the field (= EDITION). |
 | `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch: `PAY_FIRST` needs `productPrice ≥ 1`; `TRIAL_FIRST` needs `0` (see rules above). |
 | suffix / size rejected | Wrong `businessType`, non-whitelisted file type, or oversize file. |
 | `cannot determine the software form` | No `--form`, no `baseInfo.productForm`, and nothing analysable in the cwd → **ask the user** which form, then re-run with `--form <VALUE>`. |
@@ -288,8 +325,10 @@ was not returned, and where to read it (developer console → product page).
 - [reference.md](reference.md) — full endpoint list, enum values, payload schema, error codes.
 - [scripts/](scripts/) — `register.mjs`, `login.mjs`, `apply-partner.mjs`, `publish.mjs`, `lib.mjs`.
 - [templates/partner.example.json](templates/partner.example.json) — partner onboarding profile.
-- [templates/product.license.example.json](templates/product.license.example.json) — TRIAL_FIRST (先用后付) license product spec.
-- [templates/product.license.payfirst.example.json](templates/product.license.payfirst.example.json) — PAY_FIRST (先付后用) license product spec.
+- [templates/product.license.example.json](templates/product.license.example.json) — TRIAL_FIRST (先用后付) · EDITION 版本分层 license product spec.
+- [templates/product.license.payfirst.example.json](templates/product.license.payfirst.example.json) — PAY_FIRST (先付后用) · EDITION 版本分层 license product spec.
+- [templates/product.license.quota.example.json](templates/product.license.quota.example.json) — TRIAL_FIRST · QUOTA 按量额度包 license product spec.
+- [templates/product.license.quota.payfirst.example.json](templates/product.license.quota.payfirst.example.json) — PAY_FIRST · QUOTA 按量额度包 license product spec.
 - [templates/product.server.example.json](templates/product.server.example.json) — SERVER_SOFTWARE (服务端软件) non-license spec.
 - [templates/product.digital-good.example.json](templates/product.digital-good.example.json) — DIGITAL_GOOD (数字商品) non-license spec.
 - [templates/product.promotion.example.json](templates/product.promotion.example.json) — ONLY_PROMOTION (仅推广) non-license spec.

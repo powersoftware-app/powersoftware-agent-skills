@@ -41,8 +41,13 @@ publish-product/
     │   └── config.example.json
     └── templates/
         ├── partner.example.json
-        ├── product.license.example.json            (TRIAL_FIRST)
-        └── product.license.payfirst.example.json   (PAY_FIRST)
+        ├── product.license.example.json            (TRIAL_FIRST · EDITION 版本分层)
+        ├── product.license.payfirst.example.json   (PAY_FIRST · EDITION 版本分层)
+        ├── product.license.quota.example.json      (TRIAL_FIRST · QUOTA 按量额度包)
+        ├── product.license.quota.payfirst.example.json (PAY_FIRST · QUOTA 按量额度包)
+        ├── product.server.example.json             (SERVER_SOFTWARE)
+        ├── product.digital-good.example.json       (DIGITAL_GOOD)
+        └── product.promotion.example.json          (ONLY_PROMOTION)
 ```
 
 Nothing from the source skill was omitted.

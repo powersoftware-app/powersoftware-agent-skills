@@ -1,0 +1,44 @@
+{
+  "_comment": "License (TRIAL_FIRST 先用后付) client-software product under the QUOTA billing model (按量额度): sell quota packs — each licenseEditions row is a pack with quotaAmount (次数) + billingPeriod (有效期); buying again ADDs quota to the remaining balance (可累加), there is NO upgrade price-difference deduction (licenseDeductionEnabled is forced off server-side). Trial dimension is COUNT-based here: per-edition trialCount (+ optional trialCountPeriod TOTAL|MONTHLY); trialDays is NOT required under QUOTA (omit it — TRIAL_FIRST still needs licenseEnabled+licensePlatformPayment+≥1 edition). Under the default EDITION model (版本分层) trials are day-based (trialDays) and trialCount is ignored.",
+  "assets": {
+    "coverImage": "./assets/cover.png",
+    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "installer": "./assets/MyApp-setup-1.0.0.exe"
+  },
+  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "product": {
+    "submitMode": "submit",
+    "baseInfo": {
+      "productName": "My Awesome App",
+      "secondName": "AI batch image enhancer",
+      "summary": "A license-gated desktop app sold as quota packs: buy 20/100/500 credits, use them anytime, top up when used up — credits stack.",
+      "sourceStation": "https://myapp.example.com",
+      "productForm": "CLIENT_SOFTWARE",
+      "softwareVersion": "1.0.0",
+      "salesModel": "TRIAL_FIRST",
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseAllowDeveloperIssue": false,
+      "licenseDefaultMaxMachines": 3,
+      "licensePricingModel": "QUOTA",
+      "licenseEditions": [
+        { "code": "STANDARD", "name": "Standard", "sort": 1, "currency": "CNY", "productPrice": 20, "billingPeriod": "PERMANENT", "quotaAmount": 20, "trialCount": 5, "description": "20 credits, never expire." },
+        { "code": "STANDARD", "name": "Standard", "sort": 2, "currency": "CNY", "productPrice": 25, "billingPeriod": "YEARLY", "quotaAmount": 30, "trialCount": 5, "description": "30 credits valid for 1 year." },
+        { "code": "STANDARD", "name": "Standard", "sort": 3, "currency": "CNY", "productPrice": 69, "billingPeriod": "PERMANENT", "quotaAmount": 100, "trialCount": 5, "description": "100 credits, never expire — the popular pack." },
+        { "code": "STANDARD", "name": "Standard", "sort": 4, "currency": "CNY", "productPrice": 199, "billingPeriod": "PERMANENT", "quotaAmount": 500, "trialCount": 5, "description": "500 credits, never expire." }
+      ],
+      "consumptionRevenueSharing": false,
+      "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "introduce": {
+      "functions": "Batch image enhancement, style presets, local-first processing, and a credit meter wired to the PowerSoftware license quota.",
+      "targetUserGroup": "Designers and content teams who pay for usage rather than a seat license.",
+      "usageScenarios": "Occasional bulk enhancement jobs where a monthly subscription would be wasted.",
+      "painPoints": "Subscriptions charge for idle months; one-off keys don't scale with usage."
+    },
+    "receivePayment": {
+      "currency": "CNY",
+      "productPrice": 0
+    }
+  }
+}
