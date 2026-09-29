@@ -130,6 +130,7 @@ structure gaps** (usually the real problem). Inspect these; for each, mark ✅ p
 | 14 | Structured data | page head | `SoftwareApplication`+`FAQPage`+`BreadcrumbList` |
 | 15 | Analytics | head/env | GSC property matches the chosen host variant; confirm GA4/Clarity if used |
 | 16 | **Brand name ownable** | exact-match Google + query.domains | the coined brand ranks for *itself* (no incumbent owns the term), `.com/.app/.ai` available, not a word Google "corrects" (Pixelfold→Pixel Fold). A taken/descriptive brand caps the brand-word channel at 0 |
+| 17 | **Brand-word disambiguation via JSON-LD graph** | base-layout site JSON-LD + every product/landing `SoftwareApplication` | `Organization`/`WebSite` carry stable `@id`; each `SoftwareApplication` links back with `publisher: { "@id": "<origin>/#organization" }`, so a coined name that collides with an unrelated incumbent (a car, a famous OSS tool) is still read as *your* entity. See §C.1 |
 
 Typical finding: rows 1–5, 14–15 are ✅ (the "tech is fine" part), while 6–13 and 16 are the actual gaps.
 The highest-leverage single fix is usually **#6 trailing slash** (it silently creates duplicate
@@ -142,6 +143,41 @@ GSC rows and blocks indexing of a whole site at DR<1).
 - **Platform-thin product pages → the database** (add `slug` + put title/summary into the i18n
   field set). Cross-link: landing CTA → product slug page; product page → landing (anchor text
   contains the target word).
+
+### C.1 Structured-data entity graph (the free remedy when a brand word is SERP-collided)
+
+Situation: you coined a product name, then its exact-match SERP turns out to be **entirely occupied by
+an unrelated incumbent** — a car model sharing the transliteration, a famous open-source tool one letter
+off, a same-named app studio. You cannot out-authority them, and the coined word has ~0 volume anyway,
+so **do not spend content budget chasing it**. What you *can* fix for free is the **entity read**: declare
+in machine-readable form that the name is *your* software, published by *your* org, so Google stops
+conflating you with the collision (this lifts relevance/entity, not authority).
+
+Pattern (framework-agnostic; base layout emits the org once, every product/landing page links back):
+```
+Site-level (base layout, on every page):
+  Organization { "@id": "<origin>/#organization", name, url, sameAs:[ real reachable profiles ] }
+  WebSite      { "@id": "<origin>/#website", publisher: { "@id": "<origin>/#organization" } }
+
+Page-level (product detail / demand landing):
+  SoftwareApplication {
+    "@id": "<pageUrl>#software", name, description, url,
+    publisher: { "@id": "<origin>/#organization" }   // ← the disambiguation edge
+  }
+```
+The `publisher → @id` join folds the product node into the organization node as one graph, so a brand-
+word search resolves to "this = <Org>'s software", not the car/tool. **All `@id` strings must be
+byte-identical** to the one the base layout emits (same canonical origin, same trailing-slash form), or
+the graph silently splits across pages.
+
+Hygiene rules:
+- `sameAs` = **only real, reachable brand-home URLs.** A bare placeholder (e.g. `https://github.com/`
+  with no org behind it) is a *negative* entity signal — delete it. For a locale whose market blocks
+  those platforms, list that locale's own domestic profiles (or leave empty), never unreachable ones.
+- This does **not** manufacture demand for a 0-volume coined word — pair it with the Phase 8 link push.
+- Non-Google engines (esp. Baidu) largely ignore JSON-LD; there the real levers are the webmaster-platform
+  push + ICP/branding consistency. Do the graph because it is ~free and correct, not because it rescues
+  that locale's traffic.
 
 ---
 

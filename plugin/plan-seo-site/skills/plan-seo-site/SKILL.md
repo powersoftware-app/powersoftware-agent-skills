@@ -155,7 +155,10 @@ Directly search the word and look at the **top 10**:
   cross-link; **descriptive anchor text**; breadcrumbs. A live "latest pages" list on the home page +
   good internal links beats a sitemap alone (a sitemap is a *suggestion*).
 - FAQ answers come from the **real "People Also Ask"** on that SERP — never invented.
-- Structured data: `SoftwareApplication` (+ `operatingSystem`) + `FAQPage` + `BreadcrumbList`.
+- Structured data: `SoftwareApplication` (+ `operatingSystem`) + `FAQPage` + `BreadcrumbList`. When the
+  brand word collides with an unrelated incumbent, wire the JSON-LD **entity graph** — give `Organization`/
+  `WebSite` a stable `@id`, and point every `SoftwareApplication` back with `publisher: { @id }` — so Google
+  reads the coined name as *your* org's software (free relevance/entity fix, not authority; see [reference.md](reference.md) §C.1).
 
 ### Phase 5 — Internationalize correctly
 
