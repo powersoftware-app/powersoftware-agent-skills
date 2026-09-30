@@ -26,24 +26,6 @@
       "skills": [
         "./skills/integrate-license"
       ]
-    },
-    {
-      "name": "plan-seo-site",
-      "description": "Knowledge-only playbook to plan a product site's SEO infrastructure and keyword-driven landing pages with 哥飞's method: one domain + one-level semantic subdirectory + one-page-one-keyword, task-words not attribute-words, keyword KD/referring-domain budget, content i18n & hreflang/canonical checks, trailing-slash & main-domain normalization, and Search Console indexing verification. Includes a repo self-check list and a worked powersoftware.app case.",
-      "source": "./plugin/plan-seo-site/",
-      "strict": false,
-      "skills": [
-        "./skills/plan-seo-site"
-      ]
-    },
-    {
-      "name": "find-profitable-demand",
-      "description": "Demand-first playbook to find, validate and monetize a profitable demand for an indie / 出海 website with 哥飞's 跑通闭环 method: demand-sourcing (站找站·站找词, running-ads mining, big-site traffic split, 财富密码词根, KGR blue-ocean), a hard validation gate (共识搜索量 / 真实网页供应量 / 第一美元 ROI), fast MVP launch, traffic & link paths, AdSense/paid monetization, and a real case library. Decides WHAT to build; plan-seo-site covers HOW to rank it.",
-      "source": "./plugin/find-profitable-demand/",
-      "strict": false,
-      "skills": [
-        "./skills/find-profitable-demand"
-      ]
     }
   ]
 }

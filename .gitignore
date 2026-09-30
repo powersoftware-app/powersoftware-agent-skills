@@ -9,8 +9,6 @@ assets/
 # ...but keep the plugin's own asset (logo) tracked
 !plugin/publish-product/assets/
 !plugin/publish-product/assets/**
-!plugin/plan-seo-site/assets/
-!plugin/plan-seo-site/assets/**
 
 # node
 node_modules/
