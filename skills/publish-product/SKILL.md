@@ -311,7 +311,7 @@ was not returned, and where to read it (developer console → product page).
 | `licenseEditions.priceAscending` | Platform-payment EDITION edition prices not strictly increasing (QUOTA packs are exempt). |
 | `quotaAmount` missing / `< 1` | QUOTA (按量额度) pack row without a quota count → set `quotaAmount` (e.g. 20/100) on every `licenseEditions` row. |
 | `invalid licensePricingModel` | Not `EDITION`/`QUOTA` → use one of them or omit the field (= EDITION). |
-| `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch: `PAY_FIRST` needs `productPrice ≥ 1`; `TRIAL_FIRST` needs `0` (see rules above). |
+| `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch: `PAY_FIRST` needs `productPrice ≥ 1` (QUOTA model exempt — quota packs carry the prices); `TRIAL_FIRST` needs `0` (see rules above). |
 | suffix / size rejected | Wrong `businessType`, non-whitelisted file type, or oversize file. |
 | `cannot determine the software form` | No `--form`, no `baseInfo.productForm`, and nothing analysable in the cwd → **ask the user** which form, then re-run with `--form <VALUE>`. |
 | `LICENSE product ... must be CLIENT_SOFTWARE or PLUGIN` | A license/TRIAL_FIRST product was given a non-client form → confirm the real form with the user (usually CLIENT_SOFTWARE) and re-run. |

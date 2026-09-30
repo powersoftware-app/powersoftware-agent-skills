@@ -121,9 +121,11 @@ if (isQuota) {
 // Price pre-check mirrors the platform validator (ProductSchema superRefine): for
 // CLIENT_SOFTWARE / SERVER_SOFTWARE / DIGITAL_GOOD / PLUGIN that are NOT TRIAL_FIRST (PAY_FIRST or
 // unset → defaults PAY_FIRST), receivePayment.productPrice must be >= 1 (no ¥0 buyout) — regardless
-// of whether the product enables licenses. ONLY_PROMOTION has no price requirement. Fail early.
+// of whether the product enables licenses. QUOTA (按量额度) is exempt: revenue comes from the quota
+// packs (licenseEditions row prices), so the product itself may be a ¥0 download. ONLY_PROMOTION has
+// no price requirement. Fail early.
 const PRICE_REQUIRED_FORMS = ['CLIENT_SOFTWARE', 'SERVER_SOFTWARE', 'DIGITAL_GOOD', 'PLUGIN'];
-if (baseInfo.salesModel !== 'TRIAL_FIRST' && PRICE_REQUIRED_FORMS.includes(form)) {
+if (baseInfo.salesModel !== 'TRIAL_FIRST' && pricingModel !== 'QUOTA' && PRICE_REQUIRED_FORMS.includes(form)) {
   const pp = product.receivePayment?.productPrice;
   if (pp == null || Number(pp) < 1) {
     fail(`${form} (PAY_FIRST 先付后用) needs spec.product.receivePayment.productPrice >= 1 — no ¥0 buyout; ask the user for the product price and re-run. (ONLY_PROMOTION / TRIAL_FIRST do not require a price.)`);

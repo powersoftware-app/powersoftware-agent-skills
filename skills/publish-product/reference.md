@@ -160,7 +160,8 @@ locally and fails with an actionable message before submitting.
 `currency`, `productPrice`, `productIncome`, `deployPrice`, `deployIncome`.
 - `TRIAL_FIRST`: `productPrice` must be `0`/null.
 - `PAY_FIRST` on client/server/digital-good/plugin: `productPrice ≥ 1` (the upfront price paid
-  before first use; ¥0 buyout rejected).
+  before first use; ¥0 buyout rejected). QUOTA (`licensePricingModel="QUOTA"`) is exempt — revenue
+  comes from quota packs, the product itself may be a ¥0 download.
 - `SERVER_SOFTWARE`: `deployPrice` ≤ `productPrice × 2`.
 - `DIGITAL_GOOD`: no deploy fields allowed; `digitalGoodsTypeId` + `softwareVersion` + file required.
 
@@ -170,7 +171,8 @@ locally and fails with an actionable message before submitting.
   and only for `CLIENT_SOFTWARE`/`PLUGIN`. `trialDays` (1–365) is required under EDITION; under QUOTA
   it may be omitted (trial is count-based via `trialCount`).
 - `PAY_FIRST`（先付后用）may still enable licenses: `licenseEnabled=true` + ≥1 `licenseEdition`
-  allowed; only `receivePayment.productPrice ≥ 1` is enforced. `trialDays` must NOT be set
+  allowed; `receivePayment.productPrice ≥ 1` is enforced (QUOTA model exempt — quota packs carry
+  the prices). `trialDays` must NOT be set
   (it is a `TRIAL_FIRST`-only field). The trial dimension is model-specific: EDITION is day-based
   only (`trialCount` ignored/stripped by `publish.mjs`); only QUOTA packs may carry `trialCount`.
 - Edition unique key: `(code, billingPeriod, quotaAmount)` — billingPeriod defaults `PERMANENT`;
@@ -193,7 +195,7 @@ locally and fails with an actionable message before submitting.
 | `PRODUCT.validate.licenseEditions.priceAscending` | platform-payment EDITION prices not ascending (QUOTA exempt) |
 | `PRODUCT.validate.quotaAmount.required` | QUOTA pack row without `quotaAmount ≥ 1` |
 | `PRODUCT.validate.trialDays.required` | TRIAL_FIRST + EDITION without `trialDays` 1–365 |
-| `PRODUCT.validate.productPrice.required` | price < 1 (or missing) for `PAY_FIRST` |
+| `PRODUCT.validate.productPrice.required` | price < 1 (or missing) for `PAY_FIRST` (QUOTA model exempt) |
 | `PRODUCT.validate.productPrice.trialFirstZero` | price ≠ 0 for TRIAL_FIRST |
 | `PRODUCT.validate.softwareVersion.format` | version not `x.y.z` |
 | `FILE.process.suffix_not_allowed` / `file_size_exceed` / `upload_limit` | upload rejected |
