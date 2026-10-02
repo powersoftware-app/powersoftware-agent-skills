@@ -132,7 +132,8 @@ locally and fails with an actionable message before submitting.
 
 | Field | Rule |
 |---|---|
-| `productName`, `secondName` | 3–100 chars |
+| `productName` | 1–100 chars |
+| `secondName` | 3–100 chars |
 | `summary` | 5–2000 chars |
 | `sourceStation`, `demoStation`, `shopLink`, `sourceCodeGitUrl` | valid URL if present |
 | `productForm` | required enum |
