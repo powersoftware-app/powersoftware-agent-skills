@@ -1,5 +1,5 @@
 {
-  "_comment": "License (PAY_FIRST 先付后用) client-software product: the user pays receivePayment.productPrice (>= 1, no ¥0 buyout) BEFORE first use, then activates a license edition. Unlike TRIAL_FIRST there is no mandatory trialDays (omit it); per-edition trialCount is only meaningful under the QUOTA pricing model (licensePricingModel=QUOTA) — under the default EDITION model trials are day-based and the publish form does not even show a trial-count field. Keep the pricing/edition rules in reference.md in mind (edition prices strictly ascending when licensePlatformPayment=true).",
+  "_comment": "License (PAY_FIRST 先付后用) client-software product: the user pays receivePayment.productPrice (>= 1, no ¥0 buyout) BEFORE first use, then activates a license edition. Unlike TRIAL_FIRST there is no mandatory trialDays (omit it); per-edition trialCount is only meaningful under the QUOTA pricing model (licensePricingModel=QUOTA) — under the default EDITION model trials are day-based and the publish form does not even show a trial-quota field. Keep the pricing/edition rules in reference.md in mind (edition prices strictly ascending when licensePlatformPayment=true).",
   "assets": {
     "coverImage": "./assets/cover.png",
     "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],

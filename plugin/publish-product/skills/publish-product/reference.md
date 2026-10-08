@@ -123,7 +123,7 @@ locally and fails with an actionable message before submitting.
 - `licensePricingModel`: `EDITION`（版本分层，缺省：按时长/买断分档，升级可补差价） · `QUOTA`（按量额度：额度包，用完再买、额度累加，不补差价）
 - `licenseEditions[].billingPeriod`: `PERMANENT` · `MONTHLY` · `YEARLY`
 - `licenseEditions[].trialCountPeriod`: `TOTAL`（累计，缺省） · `MONTHLY`（每自然月重置） — only meaningful under QUOTA
-- `licenseEditions[].quotaAmount`: pack size (次数, int 1–9999999) — required on every row under QUOTA, never set under EDITION
+- `licenseEditions[].quotaAmount`: pack size (额度数量, int 1–9999999) — required on every row under QUOTA, never set under EDITION
 - `receivePayment.currency`: `CNY` · `USD` (others limited to these two in the validator)
 - `organizationalType`: `PERSONAL` · `INDIVIDUAL_BUSINESS` · `ENTERPRISE`
 - `loginWay`: `PASSWORD` · `VERIFICATION_CODE`
@@ -170,7 +170,7 @@ locally and fails with an actionable message before submitting.
 
 - `TRIAL_FIRST` requires `licenseEnabled=true` AND `licensePlatformPayment=true` AND ≥1 `licenseEdition`,
   and only for `CLIENT_SOFTWARE`/`PLUGIN`. `trialDays` (1–365) is required under EDITION; under QUOTA
-  it may be omitted (trial is count-based via `trialCount`).
+  it may be omitted (trial is quota-based via `trialCount`).
 - `PAY_FIRST`（先付后用）may still enable licenses: `licenseEnabled=true` + ≥1 `licenseEdition`
   allowed; `receivePayment.productPrice ≥ 1` is enforced (QUOTA model exempt — quota packs carry
   the prices). `trialDays` must NOT be set

@@ -141,7 +141,7 @@ the license is sold. **ASK the user which model fits their product — do not de
 | model | 中文 | how it sells | trial dimension | upgrade |
 |---|---|---|---|---|
 | `EDITION`（缺省） | 版本分层 | editions × `billingPeriod`（按时长/买断分档，如 BASIC/PRO × MONTHLY/YEARLY/PERMANENT） | **day-based** — `trialDays` only; `trialCount` is NOT a dimension of this model | 已购抵扣/补差价 — `licenseDeductionEnabled` defaults **true** |
-| `QUOTA` | 按量额度 | quota packs — every `licenseEditions` row is a pack with `quotaAmount`（如 20 次 / 100 次）; buy-again **stacks** onto the remaining balance | **count-based** — per-edition `trialCount` (+ optional `trialCountPeriod`: `TOTAL` 累计 / `MONTHLY` 每自然月); `trialDays` not required | 不补差价 — `licenseDeductionEnabled` is forced off server-side (全价复购) |
+| `QUOTA` | 按量额度 | quota packs — every `licenseEditions` row is a pack with `quotaAmount`（如 20 次 / 100 次）; buy-again **stacks** onto the remaining balance | **quota-based** — per-edition `trialCount` (+ optional `trialCountPeriod`: `TOTAL` 累计 / `MONTHLY` 每自然月); `trialDays` not required | 不补差价 — `licenseDeductionEnabled` is forced off server-side (全价复购) |
 
 QUOTA row rules (mirrored by `publish.mjs` pre-checks): every edition row MUST carry
 `quotaAmount ≥ 1`; the unique key is `code + billingPeriod + quotaAmount` (the same edition may
@@ -219,7 +219,7 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
 - `licenseEditions` still ≥ 1 row. Under **EDITION**: unique `code + billingPeriod`; prices
   strictly ascending when `licensePlatformPayment = true`; the trial dimension is day-based only —
   `trialCount` is NOT used (PAY_FIRST has no trial at all). Under **QUOTA**: every row carries
-  `quotaAmount`; prices not required to ascend; per-edition `trialCount` may grant count-based
+  `quotaAmount`; prices not required to ascend; per-edition `trialCount` may grant quota-based
   trials of a pack,
 - `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
 

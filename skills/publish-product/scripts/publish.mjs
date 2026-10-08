@@ -93,7 +93,7 @@ if (isLicense && pricingModel !== 'EDITION' && pricingModel !== 'QUOTA') {
 const isQuota = isLicense && pricingModel === 'QUOTA';
 if (isQuota) {
   // QUOTA：每行版本必须带 quotaAmount（额度包数量 1–9999999）；行唯一键 = code|billingPeriod|quotaAmount；
-  // 额度包价格不要求递增（递增是 EDITION 专属规则）；trialDays 可缺省（按次试用用 trialCount）。
+  // 额度包价格不要求递增（递增是 EDITION 专属规则）；trialDays 可缺省（试用额度用 trialCount）。
   const editions = Array.isArray(baseInfo.licenseEditions) ? baseInfo.licenseEditions : [];
   if (editions.length < 1) {
     fail('QUOTA (按量额度) needs ≥1 licenseEditions row — each row is a quota pack (额度包). Add packs, e.g. { code, billingPeriod, quotaAmount, productPrice }.');
@@ -101,7 +101,7 @@ if (isQuota) {
   const keys = new Set();
   for (const e of editions) {
     if (e.quotaAmount == null || Number(e.quotaAmount) < 1) {
-      fail(`QUOTA edition '${e.code ?? '?'}' is missing quotaAmount — every pack row needs quotaAmount >= 1 (次数，如 20/100).`);
+      fail(`QUOTA edition '${e.code ?? '?'}' is missing quotaAmount — every pack row needs quotaAmount >= 1 (额度数量，如 20/100).`);
     }
     const key = `${e.code ?? ''}|${e.billingPeriod ?? 'PERMANENT'}|${e.quotaAmount}`;
     if (keys.has(key)) {
@@ -115,7 +115,7 @@ if (isQuota) {
   if (withCount.length) {
     const stripped = baseInfo.licenseEditions.map((e) => { if (Number(e.trialCount) > 0) { const { trialCount, trialCountPeriod, ...rest } = e; return rest; } return e; });
     baseInfo.licenseEditions = stripped;
-    ok(`EDITION（版本分层）不启用按次试用：已自动忽略 ${withCount.length} 行的 trialCount/trialCountPeriod（按次试用请用 licensePricingModel="QUOTA"，按天试用用 trialDays）。`);
+    ok(`EDITION（版本分层）不启用试用额度：已自动忽略 ${withCount.length} 行的 trialCount/trialCountPeriod（试用额度仅 licensePricingModel="QUOTA" 支持，按天试用用 trialDays）。`);
   }
 }
 // Price pre-check mirrors the platform validator (ProductSchema superRefine): for

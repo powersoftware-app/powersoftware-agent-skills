@@ -123,5 +123,5 @@ client: activate(code, mc) → store token → verifyCached on feature use   (cl
   `node/src/webextension.js`.
 - `trialCount` is an edition-level trial dimension that exists only for products published under the
   usage-based quota model (`licensePricingModel = QUOTA`); under the default `EDITION` model trials are
-  day-based (`trialDays`) and the publish form exposes no trial-count field. Read the value from the
+  day-based (`trialDays`) and the publish form exposes no trial-quota field. Read the value from the
   response and degrade gracefully when it is `null`.
