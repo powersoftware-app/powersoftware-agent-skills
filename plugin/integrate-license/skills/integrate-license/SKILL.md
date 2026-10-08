@@ -49,8 +49,8 @@ Ask the user which one if their product setup doesn't make it obvious.
    TRIAL from the level map silently reduces a trial user to BASIC features. Classic trap.
 4. **Persist only `licenseCode` + `activationToken` + last verify result** (plain JSON file /
    OS keychain). Never persist a decryptable full license payload.
-5. **Monthly trial-quota resets follow the server's `trialPeriodKey`** — judging by the local
-   clock lets users refresh the quota by changing system time.
+5. **Reset-period trial-quota resets (`DAILY`/`WEEKLY`/`MONTHLY`) follow the server's
+   `trialPeriodKey`** — judging by the local clock lets users refresh the quota by changing system time.
 6. **HMAC is applied by the SDK** (`generateForSoftware` / `upgradeForSoftware`). Do not
    self-sign.
 7. **`checkUpdate` must fail silently** — network errors can never block the app.

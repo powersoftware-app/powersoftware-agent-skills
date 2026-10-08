@@ -39,8 +39,10 @@ optional on upgrade when one edition has several periods; default = edition conf
 | `licenseUpgradeMode` | `SAME_CODE` / `NEW_CODE` | SAME: never ask user to re-enter code; NEW: overwrite stored code after upgrade |
 | `trialExpiryTime` | original trial expiry, non-null after trial→purchase | optional grace: keep higher features until this instant (see below) |
 | `trialCount` | per-edition trial-call quota, `null` if unset | platform does NOT track spend — decrement locally |
-| `trialCountPeriod` | `TOTAL` / `MONTHLY` | MONTHLY: store usage as `{periodKey, used}` |
-| `trialPeriodKey` | server month key e.g. `"2026-09"` | local `periodKey` ≠ server key → reset `used` to 0. **Never use the local clock.** |
+| `trialCountPeriod` | `TOTAL` / `DAILY` / `WEEKLY` (ISO week) / `MONTHLY` | reset-type: store usage as `{periodKey, used}`, clear on key change |
+| `trialPeriodKey` | server period key for reset-type periods (`DAILY` `"2026-09-30"`, `WEEKLY` `"2026-W39"`, `MONTHLY` `"2026-09"`, all UTC; `null` otherwise) | local `periodKey` ≠ server key → reset `used` to 0. **Never use the local clock.** |
+| `billingPeriod` | `PERMANENT` / `MONTHLY` / `YEARLY`, fixed at purchase/upgrade | display only — never derive expiry locally |
+| `quotaAmount` | QUOTA-model credit bound to the code, `null` for EDITION/trial/legacy | SAME_CODE: server already accumulates → use as-is; NEW_CODE: sum `quotaAmount` across the machine's valid codes |
 
 ### Edition gating (the TRIAL trap)
 
