@@ -53,7 +53,9 @@ Ask the user which one if their product setup doesn't make it obvious.
    and read `trialUsed`/`trialRemaining`; reset-period buckets (`DAILY`/`WEEKLY`/`MONTHLY`) roll on
    the server's `trialPeriodKey` (a new period opens a new bucket → resets naturally). The local
    count is only an offline display cache; never gate on it, and never judge the period by the local
-   clock (users would refresh the quota by changing system time).
+   clock (users would refresh the quota by changing system time). Show when the trial clears via
+   `trialNextResetTime` (the UTC boundary when the current bucket rolls over) — the trial-side
+   counterpart of `quotaNextExpiry`; `null` for `TOTAL`/disabled.
 6. **HMAC is applied by the SDK** (`generateForSoftware` / `upgradeForSoftware`). Do not
    self-sign.
 7. **`checkUpdate` must fail silently** — network errors can never block the app.
@@ -71,7 +73,7 @@ Ask the user which one if their product setup doesn't make it obvious.
    "used up".
 10. **Read fields per pricing model.** A product is either `EDITION` (tiers) or `QUOTA` (usage).
     Fields not applicable to the current model are always `null` — render `-` and never assume presence:
-    `quotaAmount`/`quotaUsed`/`quotaRemaining`/`quotaNextExpiry`/`trialCount`/`trialUsed`/`trialRemaining`
+    `quotaAmount`/`quotaUsed`/`quotaRemaining`/`quotaNextExpiry`/`trialCount`/`trialUsed`/`trialRemaining`/`trialNextResetTime`
     are QUOTA-only (`null` for EDITION); `softwareMajorVersion`/`trialDays`/`trialExpiryTime`/`licenseDeductionEnabled`
     are EDITION-only. `billingPeriod` is dual-meaning (EDITION = subscription period; QUOTA = per-lot
     validity). Full mapping in [reference.md](reference.md).
