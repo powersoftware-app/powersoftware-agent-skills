@@ -49,13 +49,24 @@ Ask the user which one if their product setup doesn't make it obvious.
    TRIAL from the level map silently reduces a trial user to BASIC features. Classic trap.
 4. **Persist only `licenseCode` + `activationToken` + last verify result** (plain JSON file /
    OS keychain). Never persist a decryptable full license payload.
-5. **Reset-period trial-quota resets (`DAILY`/`WEEKLY`/`MONTHLY`) follow the server's
-   `trialPeriodKey`** — judging by the local clock lets users refresh the quota by changing system time.
+5. **Trial quota is server-accounted too** — bill trial uses through `consume(..., kind='trial')`
+   and read `trialUsed`/`trialRemaining`; reset-period buckets (`DAILY`/`WEEKLY`/`MONTHLY`) roll on
+   the server's `trialPeriodKey` (a new period opens a new bucket → resets naturally). The local
+   count is only an offline display cache; never gate on it, and never judge the period by the local
+   clock (users would refresh the quota by changing system time).
 6. **HMAC is applied by the SDK** (`generateForSoftware` / `upgradeForSoftware`). Do not
    self-sign.
 7. **`checkUpdate` must fail silently** — network errors can never block the app.
 8. **Honor `licenseUpgradeMode`**: `SAME_CODE` → code never changes; `NEW_CODE` → overwrite the
-   stored code with the new one returned after upgrade/renewal.
+   stored code with the new one returned after upgrade/renewal. `NEW_CODE` is **deprecated since
+   2026-10** — new products are always `SAME_CODE`; keep the NEW handling only for legacy products.
+9. **QUOTA products: the code is the wallet, spend is server-side, paid quota is per-lot with its own
+   expiry.** Read the lot-aggregated `quotaRemaining` (Σ live lots) / `quotaUsed` as the trusted
+   balance (`quotaAmount` is only a display total = Σ granted lot `cap`); bill each use through
+   `consume`, which deducts the earliest-expiring live lot first (FIFO). Never sum quota across the
+   machine's codes, and never gate on local counts — `consume` charges only the current code's lots,
+   never its machine siblings. **The code is never `expired` by quota** (exhausting/expiring all lots
+   only drives `remaining=0` to prompt repurchase).
 
 ## Step 2 — Fetch the SDK into the project
 

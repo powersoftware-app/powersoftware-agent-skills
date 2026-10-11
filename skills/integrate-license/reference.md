@@ -20,6 +20,7 @@ Defaults: Node `baseUrl = https://www.powersoftware.app/frontApi`; purchase page
 | `activate(code, mc)` | `/license/activate` | ✅ | ✅ | → `{ activationToken, licenseUpgradeMode, trialExpiryTime, trialCount… }` |
 | `verify(code, mc, token)` | `/license/verify` | ✅ | ✅ | → `{ valid, edition, expiryTime, … }` |
 | `verifyCached(code, mc, token)` | same | ✅ | ✅ | 60s **in-process** cache; reset on app restart |
+| `consume(code, mc, token, amount, requestId, kind)` | `/license/quota/consume` | ✅ | ✅ | QUOTA products only, same family as `verify` (`activationToken`); `kind`=`quota` (default, paid lots) / `trial` (trial period bucket). Paid quota granted as **lots** (each `cap` + own `expires_at`); deducts the **earliest-expiring live lot first (FIFO)** with a per-lot atomic bounded UPDATE (never its machine siblings) → `{ consumed, kind, quotaUsed, quotaRemaining, trialUsed, trialRemaining }`; the code is **never `expired` by quota**. `requestId` (8–128) = idempotency key |
 | `deactivate(code, mc)` | `/license/deactivate` | ✅ | ✅ | Unbind machine; needs logged-in context (personal-center scenario) |
 | `purchaseUrl(mc, {base})` | — (URL builder) | ✅ | — | `/product/license/purchase?productUniqueCode=&machineCode=` |
 | `checkUpdate(currentVersion)` | `/product/updateCheck` | ✅ | ✅ | → `{ hasUpdate, latestVersion }`; lenient: unknown/off-shelf product → `hasUpdate:false` |
@@ -36,13 +37,14 @@ optional on upgrade when one edition has several periods; default = edition conf
 | `valid` | bool | gate the feature |
 | `edition` | user's edition code | compare against required (level map **must include `TRIAL: 99`**) |
 | `expiryTime` | ISO/epoch expiry, `null` = permanent | show renewal hint |
-| `licenseUpgradeMode` | `SAME_CODE` / `NEW_CODE` | SAME: never ask user to re-enter code; NEW: overwrite stored code after upgrade |
+| `licenseUpgradeMode` | `SAME_CODE` / `NEW_CODE` | SAME: never ask user to re-enter code; NEW: overwrite stored code after upgrade. **`NEW_CODE` deprecated since 2026-10** — new products are always `SAME_CODE`; the field is still returned, so keep the NEW branch only for legacy products |
 | `trialExpiryTime` | original trial expiry, non-null after trial→purchase | optional grace: keep higher features until this instant (see below) |
-| `trialCount` | product-level trial-call quota, `null` if unset | platform does NOT track spend — decrement locally |
-| `trialCountPeriod` | `TOTAL` / `DAILY` / `WEEKLY` (ISO week) / `MONTHLY` | reset-type: store usage as `{periodKey, used}`, clear on key change |
-| `trialPeriodKey` | server period key for reset-type periods (`DAILY` `"2026-09-30"`, `WEEKLY` `"2026-W39"`, `MONTHLY` `"2026-09"`, all UTC; `null` otherwise) | local `periodKey` ≠ server key → reset `used` to 0. **Never use the local clock.** |
+| `trialCount` | product-level trial-call quota (the grant `cap` template), `null` if unset | **server-accounted in period buckets** (`kind=trial`); decrement via `consume(kind='trial')`, read `trialUsed`/`trialRemaining` |
+| `trialCountPeriod` | `TOTAL` / `DAILY` / `WEEKLY` (ISO week) / `MONTHLY` | reset-type: server bucket key rolls each period → resets naturally (no cron); local count is only an offline display cache |
+| `trialPeriodKey` | server period key for reset-type periods (`DAILY` `"2026-09-30"`, `WEEKLY` `"2026-W39"`, `MONTHLY` `"2026-09"`, all UTC; `null` otherwise) | the server trial bucket `bucket_key`; a new period opens a new bucket → old resets. **Never use the local clock.** |
 | `billingPeriod` | `PERMANENT` / `MONTHLY` / `YEARLY`, fixed at purchase/upgrade | display only — never derive expiry locally |
-| `quotaAmount` | QUOTA-model credit bound to the code, `null` for EDITION/trial/legacy | SAME_CODE: server already accumulates → use as-is; NEW_CODE: sum `quotaAmount` across the machine's valid codes |
+| `quotaAmount` | QUOTA-model **display total** for **this** code (= Σ granted lot `cap`), `null` for EDITION/trial/legacy | Display only — the spendable balance is the lot-aggregated `quotaRemaining` (Σ live lots). Consumption goes through server-side `consume`, which deducts this code's lots in FIFO order (never its machine siblings) and returns `quotaUsed` / `quotaRemaining` (paid) + `trialUsed` / `trialRemaining` (trial) as the trusted balances |
+| `trialUsed` / `trialRemaining` | current trial period-bucket used / remaining (server-accounted) | `null` when `trialCount` disabled; gate trial features on `trialRemaining` |
 
 ### Edition gating (the TRIAL trap)
 
