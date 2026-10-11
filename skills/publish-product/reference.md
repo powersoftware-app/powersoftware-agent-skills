@@ -76,6 +76,7 @@ Product images/files are protected from manual `deleteFile`.
   "productId": 123,           // omit/null = create; set = edit (needs greater softwareVersion)
   "submitMode": "submit",     // "draft" saves a draft (no review/DingTalk), "submit" (default) files for review
   "baseInfo":    { ... },
+  "licenseInfo": { ... },     // optional — the whole license/trial tier, SIBLING of baseInfo (see below)
   "introduce":   { ... },
   "receivePayment": { ... }
 }
@@ -109,7 +110,8 @@ it to the workspace's license integration (see SKILL.md Phase 6); it is not a se
 | `DIGITAL_GOOD` | `assets.sourceCodeFile` → `sourceCodeFile` | `product.digital-good.example.json` | PAY_FIRST≥1; needs `digitalGoodsTypeId`; no deploy fields |
 | `ONLY_PROMOTION` | none (links out only) | `product.promotion.example.json` | no price required |
 
-Non-license products must NOT set `licenseEnabled`/`licenseEditions`/`licensePlatformPayment`.
+Non-license products must NOT set `licenseEnabled`/`licenseEditions`/`licensePlatformPayment` —
+they simply omit `licenseInfo` entirely (and must not carry those keys inside `baseInfo`).
 `publish.mjs` pre-checks the price / package / `digitalGoodsTypeId` / deploy-field rules above
 locally and fails with an actionable message before submitting.
 
@@ -120,9 +122,9 @@ locally and fails with an actionable message before submitting.
     cwd (`manifest.json`+`manifest_version`→`PLUGIN`; Electron/Tauri/`electron-builder`/NSIS→`CLIENT_SOFTWARE`).
     If still unknown it **stops and asks the user** — never guesses. License products must be `CLIENT_SOFTWARE`/`PLUGIN`.
 - `salesModel`: `PAY_FIRST`（先付后用，缺省） · `TRIAL_FIRST`（先用后付）
-- `licensePricingModel`: `EDITION`（版本分层，缺省：按时长/买断分档，升级可补差价） · `QUOTA`（按量额度：额度包，用完再买、额度累加，不补差价）
+- `licensePricingModel` (`licenseInfo`): `EDITION`（版本分层，缺省：按时长/买断分档，升级可补差价） · `QUOTA`（按量额度：额度包，用完再买、额度累加，不补差价）
 - `licenseEditions[].billingPeriod`: `PERMANENT` · `MONTHLY` · `YEARLY`
-- `licenseEditions[].trialCountPeriod`: `TOTAL`（累计，缺省） · `MONTHLY`（每自然月重置） — only meaningful under QUOTA
+- `licenseInfo.trialCountPeriod`: `TOTAL`（累计，缺省） · `MONTHLY`（每自然月重置） · `WEEKLY` · `DAILY` — product-level, only meaningful under QUOTA
 - `licenseEditions[].quotaAmount`: pack size (额度数量, int 1–9999999) — required on every row under QUOTA, never set under EDITION
 - `receivePayment.currency`: `CNY` · `USD` (others limited to these two in the validator)
 - `organizationalType`: `PERSONAL` · `INDIVIDUAL_BUSINESS` · `ENTERPRISE`
@@ -139,16 +141,30 @@ locally and fails with an actionable message before submitting.
 | `productForm` | required enum |
 | `softwareVersion` | `^\d+\.\d+\.\d+$` (required for client/server/digital-good/plugin) |
 | `coverImage` | **required** — a `product_cover_picture` objectName |
-| `salesModel` | `PAY_FIRST`/`TRIAL_FIRST` |
-| `trialDays` | 1–365, required when `TRIAL_FIRST` |
-| `licenseEnabled`, `licensePlatformPayment`, `licenseAllowDeveloperIssue` | booleans |
-| `licenseDefaultMaxMachines` | 1–100 |
-| `licensePricingModel` | `EDITION`/`QUOTA`; omit = EDITION (版本分层). QUOTA = 按量额度包 |
-| `licenseDeductionEnabled` | 已购抵扣/升级补差价：EDITION 默认 true；QUOTA 服务端强制 false（传 true 无效） |
-| `licenseEditions[]` | `{ code, name, sort?, currency?, productPrice?, billingPeriod?, quotaAmount?, trialCount?, trialCountPeriod?, description? }` — `quotaAmount` required per row under QUOTA only |
+| `salesModel` | `PAY_FIRST`/`TRIAL_FIRST` — stays here even after the license tier split |
 | `clientSoftware[]` | `[{ system, softwarePackages:[{ platform, executableFile:{name,url} }] }]` — required for CLIENT_SOFTWARE/PLUGIN |
 | `sourceCodeFile` | `{name,url}` — required for SERVER_SOFTWARE / DIGITAL_GOOD |
 | `industryIds`, `occupationIds`, `tagIds` | number arrays |
+
+## licenseInfo fields (sibling of `baseInfo` — the license/trial tier)
+
+All 12 license & trial keys live in `product.licenseInfo`, **not** in `baseInfo`. The validator
+keeps unknown `baseInfo` keys instead of stripping them, so a pre-migration payload is rejected
+with `PRODUCT.validate.licenseInfo.moved` rather than silently publishing with an emptied license
+config. Non-license products omit this object.
+
+| Field | Rule |
+|---|---|
+| `licenseEnabled`, `licensePlatformPayment`, `licenseAllowDeveloperIssue` | booleans |
+| `licenseDefaultMaxMachines` | 1–100 |
+| `trialDays` | 1–365, required when `TRIAL_FIRST` under EDITION |
+| `trialCount` | 0–999 trial quota, **product-level**; only meaningful under QUOTA (EDITION + `trialCount>0` is rejected) |
+| `trialCountPeriod` | `TOTAL`(缺省)/`MONTHLY`/`WEEKLY`/`DAILY`; forced back to `TOTAL` when the quota is off |
+| `licensePricingModel` | `EDITION`/`QUOTA`; omit = EDITION (版本分层). QUOTA = 按量额度包 |
+| `licenseDeductionEnabled` | 已购抵扣/升级补差价：EDITION 默认 true；QUOTA 服务端强制 false（传 true 无效） |
+| `licenseEditions[]` | `{ code, name, sort?, currency?, productPrice?, secondaryCurrency?, secondaryProductPrice?, billingPeriod?, quotaAmount?, description? }` — `quotaAmount` required per row under QUOTA only; trial quota is NOT a row field |
+| `licenseUpgradeMode` | `SAME_CODE`/`NEW_CODE` — maintained by the admin console, not by developers; declaring it here only guards against dirty values |
+| `licenseApiSecret` | ≤ 200 chars — generated server-side when `licenseEnabled=true`; do not submit it |
 
 ## introduce fields
 
@@ -168,14 +184,18 @@ locally and fails with an actionable message before submitting.
 
 ## Cross-field validation (superRefine) — the ones that bite
 
+- **License tier guard**: any of the 12 license/trial keys still inside `baseInfo` is rejected
+  (`PRODUCT.validate.licenseInfo.moved`) — move it to `product.licenseInfo`. `salesModel` is not one
+  of them and stays in `baseInfo`.
 - `TRIAL_FIRST` requires `licenseEnabled=true` AND `licensePlatformPayment=true` AND ≥1 `licenseEdition`,
   and only for `CLIENT_SOFTWARE`/`PLUGIN`. `trialDays` (1–365) is required under EDITION; under QUOTA
-  it may be omitted (trial is quota-based via `trialCount`).
+  it may be omitted (trial is quota-based via `licenseInfo.trialCount`).
 - `PAY_FIRST`（先付后用）may still enable licenses: `licenseEnabled=true` + ≥1 `licenseEdition`
   allowed; `receivePayment.productPrice ≥ 1` is enforced (QUOTA model exempt — quota packs carry
   the prices). `trialDays` must NOT be set
   (it is a `TRIAL_FIRST`-only field). The trial dimension is model-specific: EDITION is day-based
-  only (`trialCount` ignored/stripped by `publish.mjs`); only QUOTA packs may carry `trialCount`.
+  only — `licenseInfo.trialCount > 0` under EDITION is rejected (`PRODUCT.validate.trialCount`), and
+  `publish.mjs` strips it locally; only QUOTA uses the quota-based trial dimension.
 - Edition unique key: `(code, billingPeriod, quotaAmount)` — billingPeriod defaults `PERMANENT`;
   `quotaAmount` is empty under EDITION, so effectively `code + billingPeriod` (EDITION) vs
   `code + billingPeriod + quotaAmount` (QUOTA — one edition can sell several packs like 20/100/500).
@@ -191,11 +211,13 @@ locally and fails with an actionable message before submitting.
 | `PRODUCT.process.need_developer_role` | session lacks `DEVELOPER` — approve partner + re-login |
 | `PRODUCT.validate.coverImage.require` | missing cover |
 | `PRODUCT.validate.images.size` | `introduce.images` not in 3–20 |
+| `PRODUCT.validate.licenseInfo.moved` | a license/trial key is still in `baseInfo` → move it into `product.licenseInfo` |
 | `PRODUCT.validate.licenseEditions.required` | no editions while `TRIAL_FIRST` |
 | `PRODUCT.validate.licenseEditions.periodDuplicate` | duplicate edition row (key includes `quotaAmount` under QUOTA) |
 | `PRODUCT.validate.licenseEditions.priceAscending` | platform-payment EDITION prices not ascending (QUOTA exempt) |
 | `PRODUCT.validate.quotaAmount.required` | QUOTA pack row without `quotaAmount ≥ 1` |
 | `PRODUCT.validate.trialDays.required` | TRIAL_FIRST + EDITION without `trialDays` 1–365 |
+| `PRODUCT.validate.trialCount` | EDITION carries `licenseInfo.trialCount > 0` (the quota trial dimension is QUOTA-only) |
 | `PRODUCT.validate.productPrice.required` | price < 1 (or missing) for `PAY_FIRST` (QUOTA model exempt) |
 | `PRODUCT.validate.productPrice.trialFirstZero` | price ≠ 0 for TRIAL_FIRST |
 | `PRODUCT.validate.softwareVersion.format` | version not `x.y.z` |

@@ -1,11 +1,18 @@
 {
-  "_comment": "License (PAY_FIRST 先付后用) client-software product under the QUOTA billing model (按量额度): the buyer pays receivePayment.productPrice (>= 1) upfront, then buys quota packs — each licenseEditions row is a pack with quotaAmount (额度数量) + billingPeriod (有效期); packs stack on the remaining balance and prices do NOT need to be ascending (ascending is an EDITION-only rule). licenseDeductionEnabled is forced off for QUOTA server-side. Trial dimension is quota-based (trialCount / trialCountPeriod); there is no trialDays under PAY_FIRST. For the default EDITION model (版本分层) use product.license.payfirst.example.json instead.",
+  "_comment": "License (PAY_FIRST 先付后用) client-software product under the QUOTA billing model (按量额度): the buyer pays receivePayment.productPrice (>= 1) upfront, then buys quota packs — each licenseEditions row is a pack with quotaAmount (额度数量) + billingPeriod (有效期); packs stack on the remaining balance and prices do NOT need to be ascending (ascending is an EDITION-only rule). licenseDeductionEnabled is forced off for QUOTA server-side. Trial dimension is quota-based and product-level (`licenseInfo.trialCount` / `licenseInfo.trialCountPeriod`, not per-edition row fields); there is no trialDays under PAY_FIRST. For the default EDITION model (版本分层) use product.license.payfirst.example.json instead.",
   "assets": {
     "coverImage": "./assets/cover.png",
-    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "detailImages": [
+      "./assets/shot-1.png",
+      "./assets/shot-2.png",
+      "./assets/shot-3.png"
+    ],
     "installer": "./assets/MyApp-setup-1.0.0.exe"
   },
-  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "installerMeta": {
+    "system": "Windows",
+    "platform": "EXE"
+  },
   "product": {
     "submitMode": "submit",
     "baseInfo": {
@@ -16,18 +23,47 @@
       "productForm": "CLIENT_SOFTWARE",
       "softwareVersion": "1.0.0",
       "salesModel": "PAY_FIRST",
-      "licenseEnabled": true,
-      "licensePlatformPayment": true,
-      "licenseAllowDeveloperIssue": false,
-      "licenseDefaultMaxMachines": 3,
-      "licensePricingModel": "QUOTA",
-      "licenseEditions": [
-        { "code": "STANDARD", "name": "Standard", "sort": 1, "currency": "CNY", "productPrice": 25, "billingPeriod": "PERMANENT", "quotaAmount": 20, "description": "Entry pack: 20 credits." },
-        { "code": "STANDARD", "name": "Standard", "sort": 2, "currency": "CNY", "productPrice": 69, "billingPeriod": "PERMANENT", "quotaAmount": 100, "description": "Popular pack: 100 credits." },
-        { "code": "STANDARD", "name": "Standard", "sort": 3, "currency": "CNY", "productPrice": 199, "billingPeriod": "PERMANENT", "quotaAmount": 500, "description": "Pro pack: 500 credits." }
-      ],
       "consumptionRevenueSharing": false,
       "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "licenseInfo": {
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseDefaultMaxMachines": 3,
+      "licenseAllowDeveloperIssue": false,
+      "licensePricingModel": "QUOTA",
+      "licenseEditions": [
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 1,
+          "currency": "CNY",
+          "productPrice": 25,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 20,
+          "description": "Entry pack: 20 credits."
+        },
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 2,
+          "currency": "CNY",
+          "productPrice": 69,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 100,
+          "description": "Popular pack: 100 credits."
+        },
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 3,
+          "currency": "CNY",
+          "productPrice": 199,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 500,
+          "description": "Pro pack: 500 credits."
+        }
+      ]
     },
     "introduce": {
       "functions": "Batch image enhancement, style presets, local-first processing, and a credit meter wired to the PowerSoftware license quota.",

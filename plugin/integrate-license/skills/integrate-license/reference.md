@@ -38,7 +38,7 @@ optional on upgrade when one edition has several periods; default = edition conf
 | `expiryTime` | ISO/epoch expiry, `null` = permanent | show renewal hint |
 | `licenseUpgradeMode` | `SAME_CODE` / `NEW_CODE` | SAME: never ask user to re-enter code; NEW: overwrite stored code after upgrade |
 | `trialExpiryTime` | original trial expiry, non-null after trial→purchase | optional grace: keep higher features until this instant (see below) |
-| `trialCount` | per-edition trial-call quota, `null` if unset | platform does NOT track spend — decrement locally |
+| `trialCount` | product-level trial-call quota, `null` if unset | platform does NOT track spend — decrement locally |
 | `trialCountPeriod` | `TOTAL` / `DAILY` / `WEEKLY` (ISO week) / `MONTHLY` | reset-type: store usage as `{periodKey, used}`, clear on key change |
 | `trialPeriodKey` | server period key for reset-type periods (`DAILY` `"2026-09-30"`, `WEEKLY` `"2026-W39"`, `MONTHLY` `"2026-09"`, all UTC; `null` otherwise) | local `periodKey` ≠ server key → reset `used` to 0. **Never use the local clock.** |
 | `billingPeriod` | `PERMANENT` / `MONTHLY` / `YEARLY`, fixed at purchase/upgrade | display only — never derive expiry locally |
@@ -123,7 +123,7 @@ client: activate(code, mc) → store token → verifyCached on feature use   (cl
 - Fingerprint: no disk/exec → plugin-side stable ID + quota in `chrome.storage.local`
   (`{periodKey, used}` still applies); see `docs/浏览器插件授权接入指南_v3.md` and
   `node/src/webextension.js`.
-- `trialCount` is an edition-level trial dimension that exists only for products published under the
-  usage-based quota model (`licensePricingModel = QUOTA`); under the default `EDITION` model trials are
-  day-based (`trialDays`) and the publish form exposes no trial-quota field. Read the value from the
-  response and degrade gracefully when it is `null`.
+- `trialCount` is a product-level trial dimension (published under `licenseInfo.trialCount`, not per edition row)
+  that exists only for products using the usage-based quota model (`licensePricingModel = QUOTA`); under the
+  default `EDITION` model trials are day-based (`trialDays`) and the publish form exposes no trial-quota field.
+  Read the value from the response and degrade gracefully when it is `null`.

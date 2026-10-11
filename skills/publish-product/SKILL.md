@@ -134,20 +134,28 @@ Only after the user answers, re-run `node publish.mjs --spec … --form <their c
 
 ### Phase 3.6 — License billing model: 版本分层 vs 按量额度 (`licensePricingModel`)
 
-Only for **license** products (`licenseEnabled: true`). `baseInfo.licensePricingModel` chooses how
-the license is sold. **ASK the user which model fits their product — do not default silently**
-(absence of the field = `EDITION`):
+Only for **license** products (`licenseInfo.licenseEnabled: true`). `licenseInfo.licensePricingModel`
+chooses how the license is sold. **ASK the user which model fits their product — do not default
+silently** (absence of the field = `EDITION`):
 
 | model | 中文 | how it sells | trial dimension | upgrade |
 |---|---|---|---|---|
-| `EDITION`（缺省） | 版本分层 | editions × `billingPeriod`（按时长/买断分档，如 BASIC/PRO × MONTHLY/YEARLY/PERMANENT） | **day-based** — `trialDays` only; `trialCount` is NOT a dimension of this model | 已购抵扣/补差价 — `licenseDeductionEnabled` defaults **true** |
-| `QUOTA` | 按量额度 | quota packs — every `licenseEditions` row is a pack with `quotaAmount`（如 20 次 / 100 次）; buy-again **stacks** onto the remaining balance | **quota-based** — per-edition `trialCount` (+ optional `trialCountPeriod`: `TOTAL` 累计 / `MONTHLY` 每自然月); `trialDays` not required | 不补差价 — `licenseDeductionEnabled` is forced off server-side (全价复购) |
+| `EDITION`（缺省） | 版本分层 | editions × `billingPeriod`（按时长/买断分档，如 BASIC/PRO × MONTHLY/YEARLY/PERMANENT） | **day-based** — `licenseInfo.trialDays` only; `trialCount` is NOT a dimension of this model | 已购抵扣/补差价 — `licenseInfo.licenseDeductionEnabled` defaults **true** |
+| `QUOTA` | 按量额度 | quota packs — every `licenseInfo.licenseEditions` row is a pack with `quotaAmount`（如 20 次 / 100 次）; buy-again **stacks** onto the remaining balance | **quota-based** — product-level `licenseInfo.trialCount` (+ optional `licenseInfo.trialCountPeriod`: `TOTAL` 累计 / `MONTHLY` 每自然月); `trialDays` not required | 不补差价 — `licenseInfo.licenseDeductionEnabled` is forced off server-side (全价复购) |
 
 QUOTA row rules (mirrored by `publish.mjs` pre-checks): every edition row MUST carry
 `quotaAmount ≥ 1`; the unique key is `code + billingPeriod + quotaAmount` (the same edition may
 offer several packs, e.g. 20/100/500 under one `code`); pack prices are **not** required to
 ascend (ascending is an EDITION-only rule). Do NOT set `licenseDeductionEnabled: true` under
 QUOTA (ignored); under EDITION set it `false` only if the user explicitly wants full-price upgrades.
+
+> **Payload shape (提层 / tier migration):** every license & trial setting — `licenseEnabled`,
+> `licensePlatformPayment`, `licenseDefaultMaxMachines`, `licenseAllowDeveloperIssue`,
+> `licensePricingModel`, `licenseDeductionEnabled`, `licenseUpgradeMode`, `licenseApiSecret`,
+> `licenseEditions`, `trialDays`, `trialCount`, `trialCountPeriod` — lives in **`product.licenseInfo`**,
+> a SIBLING of `product.baseInfo`, never inside `baseInfo`. `salesModel` (`PAY_FIRST`/`TRIAL_FIRST`)
+> stays in `baseInfo` (it is the sales model). Leaving any of the 12 keys in `baseInfo` is rejected
+> by the API (`PRODUCT.validate.licenseInfo.moved`) and `publish.mjs` fails locally with the fix.
 
 Templates: EDITION → [`product.license.example.json`](templates/product.license.example.json) /
 [`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json);
@@ -195,15 +203,15 @@ Every product needs a cover image + 3–20 detail images + `introduce` text. On 
 rules depend on the form — and for license products, on the sales model. Confirm the form and,
 where relevant, the sales model (`baseInfo.salesModel`) with the user before filling the spec.
 
-#### License products (`CLIENT_SOFTWARE` / `PLUGIN`, `licenseEnabled: true`)
+#### License products (`CLIENT_SOFTWARE` / `PLUGIN`, `licenseInfo.licenseEnabled: true`)
 
 **`TRIAL_FIRST` (先用后付 — try before you buy):**
 
-- `licenseEnabled = true`, `licensePlatformPayment = true`,
-  under **EDITION**: `trialDays` in 1–365 (day-based trial is the EDITION trial dimension);
-  under **QUOTA**: omit `trialDays`, use per-edition `trialCount` instead (see Phase 3.6),
+- `licenseEnabled = true`, `licensePlatformPayment = true` (both in `licenseInfo`),
+  under **EDITION**: `licenseInfo.trialDays` in 1–365 (day-based trial is the EDITION trial dimension);
+  under **QUOTA**: omit `trialDays`, use product-level `licenseInfo.trialCount` instead (see Phase 3.6),
 - `receivePayment.productPrice = 0` (or omitted),
-- `licenseEditions` has ≥ 1 row; with platform payment (EDITION), prices must be **strictly
+- `licenseInfo.licenseEditions` has ≥ 1 row; with platform payment (EDITION), prices must be **strictly
   ascending**; EDITION unique key `(code + billingPeriod)`, QUOTA unique key
   `(code + billingPeriod + quotaAmount)` with `quotaAmount ≥ 1` on every row,
 - `softwareVersion` must be `x.y.z`,
@@ -211,16 +219,16 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
 
 **`PAY_FIRST` (先付后用 — pay before you use):**
 
-- `licenseEnabled = true`; `salesModel: "PAY_FIRST"` (it is also the backend default when the
-  field is omitted),
+- `licenseInfo.licenseEnabled = true`; `salesModel: "PAY_FIRST"` (it is also the backend default when the
+  field is omitted — `salesModel` is the one license-adjacent key that stays in `baseInfo`),
 - `receivePayment.productPrice ≥ 1` — this is the upfront product price the buyer pays BEFORE
   first use; a ¥0 buyout is rejected (`publish.mjs` pre-checks this locally),
 - **no** `trialDays` (only `TRIAL_FIRST` uses it; omit the field),
 - `licenseEditions` still ≥ 1 row. Under **EDITION**: unique `code + billingPeriod`; prices
   strictly ascending when `licensePlatformPayment = true`; the trial dimension is day-based only —
   `trialCount` is NOT used (PAY_FIRST has no trial at all). Under **QUOTA**: every row carries
-  `quotaAmount`; prices not required to ascend; per-edition `trialCount` may grant quota-based
-  trials of a pack,
+  `quotaAmount`; prices not required to ascend; `licenseInfo.trialCount` may grant quota-based
+  trials of a pack (it is a product-level setting, not a per-row one),
 - `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
 
 Templates: [`product.license.example.json`](templates/product.license.example.json) (TRIAL_FIRST /
@@ -231,7 +239,8 @@ EDITION) · [`product.license.payfirst.example.json`](templates/product.license.
 
 #### Non-license products
 
-No `licenseEnabled` / `licenseEditions` / `licensePlatformPayment` fields — set none of them.
+No `licenseEnabled` / `licenseEditions` / `licensePlatformPayment` fields — set none of them, in
+either `baseInfo` or `licenseInfo` (a non-license product simply omits `licenseInfo`).
 (Version tiering and quota packs are **license** billing models only — a non-license product can
 only sell a flat `receivePayment.productPrice`.)
 
@@ -310,6 +319,7 @@ was not returned, and where to read it (developer console → product page).
 | `licenseEditions.periodDuplicate` | Two editions share the same unique key — `code`+`billingPeriod` under EDITION, `code`+`billingPeriod`+`quotaAmount` under QUOTA. |
 | `licenseEditions.priceAscending` | Platform-payment EDITION edition prices not strictly increasing (QUOTA packs are exempt). |
 | `quotaAmount` missing / `< 1` | QUOTA (按量额度) pack row without a quota count → set `quotaAmount` (e.g. 20/100) on every `licenseEditions` row. |
+| `licenseInfo.moved` | A license/trial key (`licenseEnabled`, `licenseEditions`, `trialDays`, `trialCount`, …) is still inside `baseInfo` → move it into `product.licenseInfo`, a sibling of `baseInfo` (see Phase 3.6). |
 | `invalid licensePricingModel` | Not `EDITION`/`QUOTA` → use one of them or omit the field (= EDITION). |
 | `productPrice.required` / `trialFirstZero` | Price vs `salesModel` mismatch: `PAY_FIRST` needs `productPrice ≥ 1` (QUOTA model exempt — quota packs carry the prices); `TRIAL_FIRST` needs `0` (see rules above). |
 | suffix / size rejected | Wrong `businessType`, non-whitelisted file type, or oversize file. |

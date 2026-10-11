@@ -1,11 +1,18 @@
 {
-  "_comment": "License (PAY_FIRST 先付后用) client-software product: the user pays receivePayment.productPrice (>= 1, no ¥0 buyout) BEFORE first use, then activates a license edition. Unlike TRIAL_FIRST there is no mandatory trialDays (omit it); per-edition trialCount is only meaningful under the QUOTA pricing model (licensePricingModel=QUOTA) — under the default EDITION model trials are day-based and the publish form does not even show a trial-quota field. Keep the pricing/edition rules in reference.md in mind (edition prices strictly ascending when licensePlatformPayment=true).",
+  "_comment": "License (PAY_FIRST 先付后用) client-software product: the user pays receivePayment.productPrice (>= 1, no ¥0 buyout) BEFORE first use, then activates a license edition. Unlike TRIAL_FIRST there is no mandatory trialDays (omit it); the trial-quota fields (`licenseInfo.trialCount` / `licenseInfo.trialCountPeriod`) are only meaningful under the QUOTA pricing model (`licenseInfo.licensePricingModel`=QUOTA) and live in `licenseInfo`, the sibling of `baseInfo` — under the default EDITION model trials are day-based and the publish form does not even show a trial-quota field. Keep the pricing/edition rules in reference.md in mind (edition prices strictly ascending when licensePlatformPayment=true).",
   "assets": {
     "coverImage": "./assets/cover.png",
-    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "detailImages": [
+      "./assets/shot-1.png",
+      "./assets/shot-2.png",
+      "./assets/shot-3.png"
+    ],
     "installer": "./assets/MyApp-setup-1.0.0.exe"
   },
-  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "installerMeta": {
+    "system": "Windows",
+    "platform": "EXE"
+  },
   "product": {
     "submitMode": "submit",
     "baseInfo": {
@@ -16,17 +23,43 @@
       "productForm": "CLIENT_SOFTWARE",
       "softwareVersion": "1.0.0",
       "salesModel": "PAY_FIRST",
-      "licenseEnabled": true,
-      "licensePlatformPayment": true,
-      "licenseAllowDeveloperIssue": false,
-      "licenseDefaultMaxMachines": 3,
-      "licenseEditions": [
-        { "code": "BASIC", "name": "Basic", "sort": 1, "currency": "CNY", "productPrice": 29, "billingPeriod": "PERMANENT", "description": "Core features for individuals." },
-        { "code": "PRO", "name": "Pro", "sort": 2, "currency": "CNY", "productPrice": 59, "billingPeriod": "PERMANENT", "description": "Adds sync and collaboration." },
-        { "code": "ULTIMATE", "name": "Ultimate", "sort": 3, "currency": "CNY", "productPrice": 99, "billingPeriod": "PERMANENT", "description": "Team features and priority support." }
-      ],
       "consumptionRevenueSharing": false,
       "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "licenseInfo": {
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseDefaultMaxMachines": 3,
+      "licenseAllowDeveloperIssue": false,
+      "licenseEditions": [
+        {
+          "code": "BASIC",
+          "name": "Basic",
+          "sort": 1,
+          "currency": "CNY",
+          "productPrice": 29,
+          "billingPeriod": "PERMANENT",
+          "description": "Core features for individuals."
+        },
+        {
+          "code": "PRO",
+          "name": "Pro",
+          "sort": 2,
+          "currency": "CNY",
+          "productPrice": 59,
+          "billingPeriod": "PERMANENT",
+          "description": "Adds sync and collaboration."
+        },
+        {
+          "code": "ULTIMATE",
+          "name": "Ultimate",
+          "sort": 3,
+          "currency": "CNY",
+          "productPrice": 99,
+          "billingPeriod": "PERMANENT",
+          "description": "Team features and priority support."
+        }
+      ]
     },
     "introduce": {
       "functions": "Offline-first sync, command palette, plugin marketplace, cross-device clipboard, and granular license tiers.",

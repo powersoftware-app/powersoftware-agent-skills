@@ -1,11 +1,18 @@
 {
-  "_comment": "License (TRIAL_FIRST) client-software product. publish.mjs uploads `assets` first and injects their objectNames into baseInfo.coverImage / introduce.images / clientSoftware, then submits. Edit product fields; keep the pricing/edition rules in reference.md in mind.",
+  "_comment": "License (TRIAL_FIRST) client-software product. publish.mjs uploads `assets` first and injects their objectNames into baseInfo.coverImage / introduce.images / clientSoftware, then submits. Edit product fields; keep the pricing/edition rules in reference.md in mind. NOTE: all license/trial config (licenseEnabled, licenseEditions, trialDays, trialCount, licensePricingModel, …) lives in `product.licenseInfo`, a SIBLING of `product.baseInfo` — keys left inside baseInfo are rejected by the API.",
   "assets": {
     "coverImage": "./assets/cover.png",
-    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "detailImages": [
+      "./assets/shot-1.png",
+      "./assets/shot-2.png",
+      "./assets/shot-3.png"
+    ],
     "installer": "./assets/MyApp-setup-1.0.0.exe"
   },
-  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "installerMeta": {
+    "system": "Windows",
+    "platform": "EXE"
+  },
   "product": {
     "submitMode": "submit",
     "baseInfo": {
@@ -16,18 +23,44 @@
       "productForm": "CLIENT_SOFTWARE",
       "softwareVersion": "1.0.0",
       "salesModel": "TRIAL_FIRST",
-      "trialDays": 14,
-      "licenseEnabled": true,
-      "licensePlatformPayment": true,
-      "licenseAllowDeveloperIssue": false,
-      "licenseDefaultMaxMachines": 3,
-      "licenseEditions": [
-        { "code": "BASIC", "name": "Basic", "sort": 1, "currency": "CNY", "productPrice": 29, "billingPeriod": "PERMANENT", "description": "Core features for individuals." },
-        { "code": "PRO", "name": "Pro", "sort": 2, "currency": "CNY", "productPrice": 59, "billingPeriod": "PERMANENT", "description": "Adds sync and collaboration." },
-        { "code": "ULTIMATE", "name": "Ultimate", "sort": 3, "currency": "CNY", "productPrice": 99, "billingPeriod": "PERMANENT", "description": "Team features and priority support." }
-      ],
       "consumptionRevenueSharing": false,
       "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "licenseInfo": {
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseDefaultMaxMachines": 3,
+      "licenseAllowDeveloperIssue": false,
+      "trialDays": 14,
+      "licenseEditions": [
+        {
+          "code": "BASIC",
+          "name": "Basic",
+          "sort": 1,
+          "currency": "CNY",
+          "productPrice": 29,
+          "billingPeriod": "PERMANENT",
+          "description": "Core features for individuals."
+        },
+        {
+          "code": "PRO",
+          "name": "Pro",
+          "sort": 2,
+          "currency": "CNY",
+          "productPrice": 59,
+          "billingPeriod": "PERMANENT",
+          "description": "Adds sync and collaboration."
+        },
+        {
+          "code": "ULTIMATE",
+          "name": "Ultimate",
+          "sort": 3,
+          "currency": "CNY",
+          "productPrice": 99,
+          "billingPeriod": "PERMANENT",
+          "description": "Team features and priority support."
+        }
+      ]
     },
     "introduce": {
       "functions": "Offline-first sync, command palette, plugin marketplace, cross-device clipboard, and granular license tiers.",

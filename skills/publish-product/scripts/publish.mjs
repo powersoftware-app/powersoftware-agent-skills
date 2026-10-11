@@ -32,6 +32,24 @@ const baseDir = dirname(specPath);
 const assets = spec.assets || {};
 const product = spec.product || {};
 const baseInfo = product.baseInfo || fail('spec.product.baseInfo is required');
+// ---- License fields live in their own tier (提层): product.licenseInfo, a SIBLING of baseInfo --------
+// One-cut migration: the backend no longer double-reads. Any of these 12 keys still sitting in
+// baseInfo is rejected by PRODUCT_SUBMIT_VALIDATOR (PRODUCT.validate.licenseInfo.moved), so we
+// fail locally with the concrete fix instead of burning an upload round-trip.
+const LICENSE_TIER_KEYS = ['licenseEnabled', 'licensePlatformPayment', 'licenseDefaultMaxMachines', 'licenseAllowDeveloperIssue',
+  'licensePricingModel', 'licenseDeductionEnabled', 'licenseUpgradeMode', 'licenseApiSecret', 'licenseEditions',
+  'trialDays', 'trialCount', 'trialCountPeriod'];
+const legacyLicenseKeys = LICENSE_TIER_KEYS.filter((k) => baseInfo[k] !== undefined);
+if (legacyLicenseKeys.length) {
+  fail(
+    'the license/trial fields moved out of baseInfo into product.licenseInfo (a sibling of baseInfo).\n' +
+    `  Still found in spec.product.baseInfo: ${legacyLicenseKeys.join(', ')}\n` +
+    '  → MOVE them, e.g. { "baseInfo": { ... }, "licenseInfo": { "licenseEnabled": true, "licenseEditions": [ ... ], "trialDays": 14 } }\n' +
+    '  → Copy a current template: templates/product.license.example.json (TRIAL_FIRST/EDITION), .payfirst., .quota., .quota.payfirst.\n' +
+    '  salesModel (PAY_FIRST / TRIAL_FIRST) stays in baseInfo — it is the sales model, not a license setting.'
+  );
+}
+const licenseInfo = product.licenseInfo || (product.licenseInfo = {});
 const introduce = product.introduce || (product.introduce = {});
 const at = (p) => resolve(baseDir, p); // resolve asset path relative to the spec file
 
@@ -78,23 +96,23 @@ if (!form) {
 if (!PRODUCT_FORMS.includes(form)) {
   fail(`invalid productForm '${form}'. Valid: ${PRODUCT_FORMS.join(' | ')}. If unsure, ask the user.`);
 }
-const isLicense = baseInfo.licenseEnabled === true || baseInfo.salesModel === 'TRIAL_FIRST'
-  || (Array.isArray(baseInfo.licenseEditions) && baseInfo.licenseEditions.length > 0);
+const isLicense = licenseInfo.licenseEnabled === true || baseInfo.salesModel === 'TRIAL_FIRST'
+  || (Array.isArray(licenseInfo.licenseEditions) && licenseInfo.licenseEditions.length > 0);
 if (isLicense && !LICENSE_FORMS.includes(form)) {
   fail(`a LICENSE product (licenseEnabled / TRIAL_FIRST) must be ${LICENSE_FORMS.join(' or ')} — got '${form}'. Ask the user to correct the form, then re-run with --form CLIENT_SOFTWARE (or PLUGIN).`);
 }
 // ---- License billing model (授权计费模型): EDITION 版本分层（默认） / QUOTA 按量额度包 -------------
 // Mirrors ProductSchema superRefine so an invalid spec fails locally with an actionable message
 // instead of a remote i18n error. Absence of the field means EDITION (存量语义), which is fine.
-const pricingModel = baseInfo.licensePricingModel ?? 'EDITION';
+const pricingModel = licenseInfo.licensePricingModel ?? 'EDITION';
 if (isLicense && pricingModel !== 'EDITION' && pricingModel !== 'QUOTA') {
-  fail(`invalid licensePricingModel '${pricingModel}' — must be 'EDITION' (版本分层：按时长/买断分档，升级可补差价) or 'QUOTA' (按量额度：售卖额度包，用完再买、额度累加), or omit it (= EDITION).`);
+  fail(`invalid licenseInfo.licensePricingModel '${pricingModel}' — must be 'EDITION' (版本分层：按时长/买断分档，升级可补差价) or 'QUOTA' (按量额度：售卖额度包，用完再买、额度累加), or omit it (= EDITION).`);
 }
 const isQuota = isLicense && pricingModel === 'QUOTA';
 if (isQuota) {
   // QUOTA：每行版本必须带 quotaAmount（额度包数量 1–9999999）；行唯一键 = code|billingPeriod|quotaAmount；
   // 额度包价格不要求递增（递增是 EDITION 专属规则）；trialDays 可缺省（试用额度用 trialCount）。
-  const editions = Array.isArray(baseInfo.licenseEditions) ? baseInfo.licenseEditions : [];
+  const editions = Array.isArray(licenseInfo.licenseEditions) ? licenseInfo.licenseEditions : [];
   if (editions.length < 1) {
     fail('QUOTA (按量额度) needs ≥1 licenseEditions row — each row is a quota pack (额度包). Add packs, e.g. { code, billingPeriod, quotaAmount, productPrice }.');
   }
@@ -110,12 +128,16 @@ if (isQuota) {
     keys.add(key);
   }
 } else if (isLicense && pricingModel === 'EDITION') {
-  // EDITION（版本分层）试用只按天：trialCount 不是该模型的维度，后端表单不展示、落库不注入，随请求下发只会造成隐性配置。
-  const withCount = (baseInfo.licenseEditions ?? []).filter((e) => Number(e.trialCount) > 0);
+  // EDITION（版本分层）试用只按天：trialCount/trialCountPeriod 不是该模型的维度，后端表单不展示、落库不注入，
+  // 且 superRefine 会直接拒绝 licenseInfo.trialCount>0 —— 这里本地清掉并说明，避免提交被拒。
+  const withCount = (licenseInfo.licenseEditions ?? []).filter((e) => Number(e.trialCount) > 0);
   if (withCount.length) {
-    const stripped = baseInfo.licenseEditions.map((e) => { if (Number(e.trialCount) > 0) { const { trialCount, trialCountPeriod, ...rest } = e; return rest; } return e; });
-    baseInfo.licenseEditions = stripped;
-    ok(`EDITION（版本分层）不启用试用额度：已自动忽略 ${withCount.length} 行的 trialCount/trialCountPeriod（试用额度仅 licensePricingModel="QUOTA" 支持，按天试用用 trialDays）。`);
+    licenseInfo.licenseEditions = licenseInfo.licenseEditions.map((e) => { const { trialCount, trialCountPeriod, ...rest } = e; return trialCount != null || trialCountPeriod != null ? rest : e; });
+    ok(`EDITION（版本分层）不启用试用额度：已自动忽略 ${withCount.length} 个版本行上的 trialCount/trialCountPeriod（试用额度是产品级配置且仅 licensePricingModel="QUOTA" 支持，按天试用用 licenseInfo.trialDays）。`);
+  }
+  if (Number(licenseInfo.trialCount) > 0) {
+    delete licenseInfo.trialCount; delete licenseInfo.trialCountPeriod;
+    ok('EDITION（版本分层）不启用试用额度：已自动忽略 licenseInfo.trialCount/trialCountPeriod（试用额度仅 licensePricingModel="QUOTA" 支持，按天试用用 licenseInfo.trialDays）。');
   }
 }
 // Price pre-check mirrors the platform validator (ProductSchema superRefine): for

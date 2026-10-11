@@ -1,11 +1,18 @@
 {
-  "_comment": "License (TRIAL_FIRST 先用后付) client-software product under the QUOTA billing model (按量额度): sell quota packs — each licenseEditions row is a pack with quotaAmount (额度数量) + billingPeriod (有效期); buying again ADDs quota to the remaining balance (可累加), there is NO upgrade price-difference deduction (licenseDeductionEnabled is forced off server-side). Trial dimension is QUOTA-based here: per-edition trialCount (+ optional trialCountPeriod TOTAL|MONTHLY); trialDays is NOT required under QUOTA (omit it — TRIAL_FIRST still needs licenseEnabled+licensePlatformPayment+≥1 edition). Under the default EDITION model (版本分层) trials are day-based (trialDays) and trialCount is ignored.",
+  "_comment": "License (TRIAL_FIRST 先用后付) client-software product under the QUOTA billing model (按量额度): sell quota packs — each licenseEditions row is a pack with quotaAmount (额度数量) + billingPeriod (有效期); buying again ADDs quota to the remaining balance (可累加), there is NO upgrade price-difference deduction (licenseDeductionEnabled is forced off server-side). Trial dimension is QUOTA-based and lives at PRODUCT level inside `licenseInfo` (sibling of `baseInfo`): `licenseInfo.trialCount` (+ optional `licenseInfo.trialCountPeriod` TOTAL|MONTHLY) — it is NOT a per-edition row field; trialDays is NOT required under QUOTA (omit it — TRIAL_FIRST still needs licenseEnabled+licensePlatformPayment+≥1 edition). Under the default EDITION model (版本分层) trials are day-based (`licenseInfo.trialDays`) and trialCount is ignored.",
   "assets": {
     "coverImage": "./assets/cover.png",
-    "detailImages": ["./assets/shot-1.png", "./assets/shot-2.png", "./assets/shot-3.png"],
+    "detailImages": [
+      "./assets/shot-1.png",
+      "./assets/shot-2.png",
+      "./assets/shot-3.png"
+    ],
     "installer": "./assets/MyApp-setup-1.0.0.exe"
   },
-  "installerMeta": { "system": "Windows", "platform": "EXE" },
+  "installerMeta": {
+    "system": "Windows",
+    "platform": "EXE"
+  },
   "product": {
     "submitMode": "submit",
     "baseInfo": {
@@ -16,19 +23,58 @@
       "productForm": "CLIENT_SOFTWARE",
       "softwareVersion": "1.0.0",
       "salesModel": "TRIAL_FIRST",
-      "licenseEnabled": true,
-      "licensePlatformPayment": true,
-      "licenseAllowDeveloperIssue": false,
-      "licenseDefaultMaxMachines": 3,
-      "licensePricingModel": "QUOTA",
-      "licenseEditions": [
-        { "code": "STANDARD", "name": "Standard", "sort": 1, "currency": "CNY", "productPrice": 20, "billingPeriod": "PERMANENT", "quotaAmount": 20, "trialCount": 5, "description": "20 credits, never expire." },
-        { "code": "STANDARD", "name": "Standard", "sort": 2, "currency": "CNY", "productPrice": 25, "billingPeriod": "YEARLY", "quotaAmount": 30, "trialCount": 5, "description": "30 credits valid for 1 year." },
-        { "code": "STANDARD", "name": "Standard", "sort": 3, "currency": "CNY", "productPrice": 69, "billingPeriod": "PERMANENT", "quotaAmount": 100, "trialCount": 5, "description": "100 credits, never expire — the popular pack." },
-        { "code": "STANDARD", "name": "Standard", "sort": 4, "currency": "CNY", "productPrice": 199, "billingPeriod": "PERMANENT", "quotaAmount": 500, "trialCount": 5, "description": "500 credits, never expire." }
-      ],
       "consumptionRevenueSharing": false,
       "sourceStationHaveConsumptionRevenueSharing": false
+    },
+    "licenseInfo": {
+      "licenseEnabled": true,
+      "licensePlatformPayment": true,
+      "licenseDefaultMaxMachines": 3,
+      "licenseAllowDeveloperIssue": false,
+      "licensePricingModel": "QUOTA",
+      "licenseEditions": [
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 1,
+          "currency": "CNY",
+          "productPrice": 20,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 20,
+          "description": "20 credits, never expire."
+        },
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 2,
+          "currency": "CNY",
+          "productPrice": 25,
+          "billingPeriod": "YEARLY",
+          "quotaAmount": 30,
+          "description": "30 credits valid for 1 year."
+        },
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 3,
+          "currency": "CNY",
+          "productPrice": 69,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 100,
+          "description": "100 credits, never expire — the popular pack."
+        },
+        {
+          "code": "STANDARD",
+          "name": "Standard",
+          "sort": 4,
+          "currency": "CNY",
+          "productPrice": 199,
+          "billingPeriod": "PERMANENT",
+          "quotaAmount": 500,
+          "description": "500 credits, never expire."
+        }
+      ],
+      "trialCount": 5
     },
     "introduce": {
       "functions": "Batch image enhancement, style presets, local-first processing, and a credit meter wired to the PowerSoftware license quota.",
