@@ -66,7 +66,15 @@ Ask the user which one if their product setup doesn't make it obvious.
    `consume`, which deducts the earliest-expiring live lot first (FIFO). Never sum quota across the
    machine's codes, and never gate on local counts — `consume` charges only the current code's lots,
    never its machine siblings. **The code is never `expired` by quota** (exhausting/expiring all lots
-   only drives `remaining=0` to prompt repurchase).
+   only drives `remaining=0` to prompt repurchase). For quota validity, read `quotaNextExpiry` (the
+   earliest-expiring live paid lot); when it is `null`, show "perpetual" if `quotaRemaining > 0` else
+   "used up".
+10. **Read fields per pricing model.** A product is either `EDITION` (tiers) or `QUOTA` (usage).
+    Fields not applicable to the current model are always `null` — render `-` and never assume presence:
+    `quotaAmount`/`quotaUsed`/`quotaRemaining`/`quotaNextExpiry`/`trialCount`/`trialUsed`/`trialRemaining`
+    are QUOTA-only (`null` for EDITION); `softwareMajorVersion`/`trialDays`/`trialExpiryTime`/`licenseDeductionEnabled`
+    are EDITION-only. `billingPeriod` is dual-meaning (EDITION = subscription period; QUOTA = per-lot
+    validity). Full mapping in [reference.md](reference.md).
 
 ## Step 2 — Fetch the SDK into the project
 

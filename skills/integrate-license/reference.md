@@ -44,7 +44,18 @@ optional on upgrade when one edition has several periods; default = edition conf
 | `trialPeriodKey` | server period key for reset-type periods (`DAILY` `"2026-09-30"`, `WEEKLY` `"2026-W39"`, `MONTHLY` `"2026-09"`, all UTC; `null` otherwise) | the server trial bucket `bucket_key`; a new period opens a new bucket → old resets. **Never use the local clock.** |
 | `billingPeriod` | `PERMANENT` / `MONTHLY` / `YEARLY`, fixed at purchase/upgrade | display only — never derive expiry locally |
 | `quotaAmount` | QUOTA-model **display total** for **this** code (= Σ granted lot `cap`), `null` for EDITION/trial/legacy | Display only — the spendable balance is the lot-aggregated `quotaRemaining` (Σ live lots). Consumption goes through server-side `consume`, which deducts this code's lots in FIFO order (never its machine siblings) and returns `quotaUsed` / `quotaRemaining` (paid) + `trialUsed` / `trialRemaining` (trial) as the trusted balances |
+| `quotaRemaining` | QUOTA-only: Σ live-lot `max(0, cap - used)`, expired lots drop out; `null` for EDITION | The **only trusted gate** for paid quota — block at `0` and route to repurchase; `consume`'s immediate return is freshest, `verify` lags ≤ one cache TTL |
+| `quotaNextExpiry` | QUOTA-only: earliest `expires_at` among unexpired paid lots that still have remaining (ISO8601); `null` when a perpetual lot has remaining or none does; `null` for EDITION | Show quota-validity date; when `null`, render "perpetual" if `quotaRemaining > 0` else "used up" |
 | `trialUsed` / `trialRemaining` | current trial period-bucket used / remaining (server-accounted) | `null` when `trialCount` disabled; gate trial features on `trialRemaining` |
+
+### Field × pricing-model mapping (EDITION vs QUOTA)
+
+Each product picks one `licensePricingModel`; fields not applicable to the current model are always `null` — render `-`, never assume presence:
+
+- **Common (both models)**: `licenseCode`, `machineCode`, `activationToken`, `status`, `productUniqueCode`, `source`, `maxMachines`, `activatedMachines`, `edition` (EDITION = tier; QUOTA = single Basic, may be `null`).
+- **EDITION-only**: `softwareMajorVersion`, `trialDays`, `trialExpiryTime`, `licenseDeductionEnabled`.
+- **QUOTA-only**: `quotaAmount`, `quotaUsed`, `quotaRemaining`, `quotaNextExpiry`, `trialCount`, `trialCountPeriod`, `trialPeriodKey`, `trialUsed`, `trialRemaining`, and the `consume` endpoint (`kind: 'quota' | 'trial'`).
+- **`billingPeriod` is dual-meaning**: EDITION → subscription period (drives code `expiryTime` / renewal); QUOTA → per-lot validity period (per-lot `expires_at`). Their products never interact. `quotaAmount` is always `null` for EDITION; `trialCount` is always `null` for EDITION (the trial dimensions are mutually exclusive).
 
 ### Edition gating (the TRIAL trap)
 
