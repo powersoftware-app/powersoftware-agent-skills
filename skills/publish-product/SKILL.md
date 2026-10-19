@@ -214,7 +214,7 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
 - `licenseInfo.licenseEditions` has ≥ 1 row; with platform payment (EDITION), prices must be **strictly
   ascending**; EDITION unique key `(code + billingPeriod)`, QUOTA unique key
   `(code + billingPeriod + quotaAmount)` with `quotaAmount ≥ 1` on every row,
-- `softwareVersion` must be `x.y.z`,
+- `softwareVersion` must be `x.y.z` (or `x.y.z.w`, 4th build number optional; all segments numeric),
 - at least one executable package must exist.
 
 **`PAY_FIRST` (先付后用 — pay before you use):**
@@ -229,7 +229,7 @@ where relevant, the sales model (`baseInfo.salesModel`) with the user before fil
   `trialCount` is NOT used (PAY_FIRST has no trial at all). Under **QUOTA**: every row carries
   `quotaAmount`; prices not required to ascend; `licenseInfo.trialCount` may grant quota-based
   trials of a pack (it is a product-level setting, not a per-row one),
-- `softwareVersion` must be `x.y.z`, and at least one executable package must exist.
+- `softwareVersion` must be `x.y.z` (or `x.y.z.w`, 4th build number optional; all segments numeric), and at least one executable package must exist.
 
 Templates: [`product.license.example.json`](templates/product.license.example.json) (TRIAL_FIRST /
 EDITION) · [`product.license.payfirst.example.json`](templates/product.license.payfirst.example.json)
@@ -246,14 +246,14 @@ only sell a flat `receivePayment.productPrice`.)
 
 **`SERVER_SOFTWARE` (服务端软件)** — [`product.server.example.json`](templates/product.server.example.json):
 
-- `softwareVersion` `x.y.z`; a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
+- `softwareVersion` `x.y.z` (or `x.y.z.w`, 4th build number optional; all segments numeric); a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
 - `receivePayment.productPrice ≥ 1`; optional `deployPrice`, which must be `≤ productPrice × 2`,
 - `serverSoftwareDeployRole`: `MYSELF` or `PLATFORM`; `canDownloadSourceCode` boolean.
 
 **`DIGITAL_GOOD` (数字商品)** — [`product.digital-good.example.json`](templates/product.digital-good.example.json):
 
 - `digitalGoodsTypeId` required (numeric, from `GET {baseUrl}/digitalGoodsType/all`),
-- `softwareVersion` `x.y.z`; a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
+- `softwareVersion` `x.y.z` (or `x.y.z.w`, 4th build number optional; all segments numeric); a downloadable package via `assets.sourceCodeFile` (→ `baseInfo.sourceCodeFile`),
 - `receivePayment.productPrice ≥ 1`,
 - **must NOT** carry deploy/promotion fields (`deployPrice`, `deployIncome`, `afterSalesFreeDay`,
   `serverSoftwareDeployRole`) — the validator rejects them.

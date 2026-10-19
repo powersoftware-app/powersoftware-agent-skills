@@ -220,7 +220,7 @@ config. Non-license products omit this object.
 | `PRODUCT.validate.trialCount` | EDITION carries `licenseInfo.trialCount > 0` (the quota trial dimension is QUOTA-only) |
 | `PRODUCT.validate.productPrice.required` | price < 1 (or missing) for `PAY_FIRST` (QUOTA model exempt) |
 | `PRODUCT.validate.productPrice.trialFirstZero` | price ≠ 0 for TRIAL_FIRST |
-| `PRODUCT.validate.softwareVersion.format` | version not `x.y.z` |
+| `PRODUCT.validate.softwareVersion.format` | version not `x.y.z` or `x.y.z.w` (4th build number optional, all numeric) |
 | `FILE.process.suffix_not_allowed` / `file_size_exceed` / `upload_limit` | upload rejected |
 | `DEVELOPER.validate.alipayAccount.required` / `paypalAccount.required` | payout account per country |
 | `USER.process.verificationCode_captcha_required` | Turnstile enforced again — switch `baseUrl` to the CN site (login/register there skip it) |
