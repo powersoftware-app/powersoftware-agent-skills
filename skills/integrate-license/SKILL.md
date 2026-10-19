@@ -1,6 +1,6 @@
 ---
 name: integrate-license
-description: Integrate PowerSoftware (powersoftware.app / powersoftware.cn) license codes into a client software product — machine-code binding, trial claim, activation, edition gating, purchase-page redirect, in-app issuance/upgrade (HMAC), and update checking — using the official zero-dependency powersoftware-license-sdk (Node.js / Python / Java). Use when adding license or paywall verification to a desktop/CLI product, when the user mentions 授权 / 授权码 / 激活 / 试用 / 幂栈 / licenseCode / activationToken / claimTrial / verifyCached, or is wiring the product published via the publish-product skill.
+description: Integrate PowerSoftware (powersoftware.app / powersoftware.cn) license codes into a client software or browser-extension product — machine-code binding, trial claim (+ trial anti-abuse device signal), activation, edition gating, purchase-page redirect, in-app issuance/upgrade (HMAC), and update checking — using the official zero-dependency powersoftware-license-sdk (Node.js / Python / Java). Use when adding license or paywall verification to a desktop/CLI product or a browser extension (MV3), when the user mentions 授权 / 授权码 / 激活 / 试用 / 幂栈 / licenseCode / activationToken / claimTrial / verifyCached, or is wiring the product published via the publish-product skill.
 ---
 
 # Integrate PowerSoftware License (client software)
@@ -165,10 +165,32 @@ machine — use a fresh `PS_LICENSE_HOME` to re-test).
 
 ## Browser-extension products
 
-Different runtime (no disk / no exec for machine fingerprinting, quota stored in
-`chrome.storage.local`). Follow the dedicated guide in the SDK repo instead:
-`docs/浏览器插件授权接入指南_v3.md` (+ `node/src/webextension.js`). The scenario logic, edition
-gating and error UX rules from this skill still apply.
+Different runtime (no disk / no exec for machine fingerprinting) → the SDK ships a second entry
+file, `node/src/webextension.js`, and its own guide in the SDK repo:
+`docs/浏览器插件授权接入指南_v3.md` (+ `.en.md`). Follow that guide — the scenario logic, edition
+gating and error UX rules from this skill still apply. Extension-specific deltas not to get wrong:
+
+- `machineCode()` is **async** and returns an `EXT-<uuid>` Install ID (no hardware fingerprint;
+  the server infers `machineType=PLUGIN` from the prefix). It is persisted to `storage.local` **and**
+  `storage.sync` (sync wins on conflict), so it follows the browser account across devices.
+- **Uninstall / reinstall wipes extension storage** — this is the loss to design around: the Install
+  ID and the stored credential both disappear. Mitigate by keeping `licenseCode` in `storage.sync`
+  too, then on startup silently `activate()` it against the new Install ID (no user input); route
+  `machineLimit` to the personal-center unbind guidance. A user never signed into the browser
+  account just mints a fresh `EXT-` ID on every reinstall.
+- **Trial anti-abuse: report the device signal, or grants get shortened.** `claimTrial(mc, did)`
+  takes an optional 2nd arg — `deviceId()` → `DID-<uuid>`, persisted to `storage.local` only
+  (key `psDeviceId`; deliberately **never** synced) — which the SDK sends as the `x-device-id`
+  header. It is a *second dimension*, not a duplicate of the Install ID: `EXT-` follows the browser
+  account (one per person, same value on home + office), whereas `DID-` must stay glued to the
+  physical browser so the server can tell "one machine reinstalled" from "one install on each of N
+  machines". Absent or off-pattern (`^DID-[A-Za-z0-9_-]{6,64}$`) → treated as unreported → the server
+  falls back to subnet-only (`/24`) anti-abuse, and the trial grant may be shortened or repeat claims
+  rejected (`trialAlreadyPurchased`). To also survive uninstall, the guide has a first-party `ps_did`
+  cookie variant (needs `cookies` + `host_permissions`).
+- Quota spend is server-accounted for paid lots *and* trial buckets (`consume(..., kind='trial')`,
+  balance = `trialRemaining`); the local counter is a display cache only — same rule as desktop
+  (rules 5/9, [reference.md](reference.md)).
 
 ## Resources
 

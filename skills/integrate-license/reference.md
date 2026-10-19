@@ -2,7 +2,7 @@
 
 Quick-lookup extracted from the authoritative guides in
 [`powersoftware-license-sdk/docs`](https://github.com/powersoftware-app/powersoftware-license-sdk/tree/main/docs)
-(`客户端软件授权接入指南_v3`, `授权SDK规范_v3`, `授权接口文档_v3` — all bilingual).
+(`客户端软件授权接入指南_v3`, `浏览器插件授权接入指南_v3`, `授权SDK规范_v3`, `授权接口文档_v3` — all bilingual).
 All endpoints are `POST {baseUrl}/frontApi/...`, JSON in/out, response envelope
 `{ success, content, tip }`; the SDK throws on `success !== true` with `errorCode` taken from
 `content.errorCode` (Node: `err.errorCode`, Python: `e.error_code`).
@@ -134,9 +134,21 @@ client: activate(code, mc) → store token → verifyCached on feature use   (cl
 
 ## Browser extension deltas
 
-- Fingerprint: no disk/exec → plugin-side stable ID + quota in `chrome.storage.local`
-  (`{periodKey, used}` still applies); see `docs/浏览器插件授权接入指南_v3.md` and
-  `node/src/webextension.js`.
+- Entry file is `node/src/webextension.js` (not `index.js`); guide `docs/浏览器插件授权接入指南_v3.md`
+  (+ `.en.md`). `machineCode()` is **async**; no hardware fingerprint.
+- `machineCode()` → `EXT-<uuid>` Install ID, persisted to `storage.local` + `storage.sync` (sync wins)
+  → follows the browser account across devices; server reads `machineType=PLUGIN` from the prefix.
+- `deviceId()` → `DID-<uuid>` in `storage.local` only (key `psDeviceId`, **never** synced) = the
+  physical-browser dimension for trial anti-abuse. Pass it as `claimTrial(mc, did)`; the SDK puts it in
+  the `x-device-id` header. Unreported/off-pattern (`^DID-[A-Za-z0-9_-]{6,64}$`) → server falls back to
+  subnet-only (`/24`) judgement, and the grant may be shortened or a repeat claim rejected
+  (`trialAlreadyPurchased`). Optional `ps_did` first-party cookie variant survives uninstall
+  (needs `cookies` + `host_permissions`).
+- Uninstall/reinstall clears both storages (Install ID *and* credential) → recover by keeping
+  `licenseCode` in `storage.sync` and silently re-`activate()`ing the new Install ID on startup;
+  `machineLimit` → personal-center unbind (`unbindQuotaExceeded` = 30-day rebind lock).
+- Quota spend — paid lots *and* trial buckets — is server-accounted via `consume(...)` (keyed by
+  `licenseCode`); local counters are offline display caches only.
 - `trialCount` is a product-level trial dimension (published under `licenseInfo.trialCount`, not per edition row)
   that exists only for products using the usage-based quota model (`licensePricingModel = QUOTA`); under the
   default `EDITION` model trials are day-based (`trialDays`) and the publish form exposes no trial-quota field.
