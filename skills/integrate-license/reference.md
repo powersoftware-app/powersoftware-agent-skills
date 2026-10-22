@@ -21,6 +21,7 @@ Defaults: Node `baseUrl = https://www.powersoftware.app/frontApi`; purchase page
 | `verify(code, mc, token)` | `/license/verify` | ✅ | ✅ | → `{ valid, edition, expiryTime, … }` |
 | `verifyCached(code, mc, token)` | same | ✅ | ✅ | 60s **in-process** cache; reset on app restart |
 | `consume(code, mc, token, amount, requestId, kind)` | `/license/quota/consume` | ✅ | ✅ | QUOTA products only, same family as `verify` (`activationToken`); `amount` is a positive number — **decimals allowed** (fractional metering, e.g. `0.5` per AI call / token / second; server `used` is a REAL column); `kind`=`quota` (default, paid lots) / `trial` (trial period bucket). Paid quota granted as **lots** (each `cap` + own `expires_at`); deducts the **earliest-expiring live lot first (FIFO)** with a per-lot atomic bounded UPDATE (never its machine siblings) → `{ consumed, kind, quotaUsed, quotaRemaining, trialUsed, trialRemaining }`; the code is **never `expired` by quota**. `requestId` (8–128) = idempotency key |
+| `getQuotaTxn(code, mc, token, page, pageSize)` / `get_quota_txn` | `/license/quota/txn` | ✅ | ✅ | QUOTA consumption-history readback; same `activationToken` family as `verify`; returns only this code's rows, newest→oldest: `{ createTime, kind, requestId, amount, pending }` + page meta. **SDK: `getQuotaTxn` (node / webextension) + `get_quota_txn` (Python); Java REST only.** Use it for a "recent spend" list instead of a local running total |
 | `deactivate(code, mc)` | `/license/deactivate` | ✅ | ✅ | Unbind machine; needs logged-in context (personal-center scenario) |
 | `purchaseUrl(mc, {base})` | — (URL builder) | ✅ | — | `/product/license/purchase?productUniqueCode=&machineCode=` |
 | `checkUpdate(currentVersion)` | `/product/updateCheck` | ✅ | ✅ | → `{ hasUpdate, latestVersion }`; lenient: unknown/off-shelf product → `hasUpdate:false` |
@@ -149,6 +150,12 @@ client: activate(code, mc) → store token → verifyCached on feature use   (cl
   `machineLimit` → personal-center unbind (`unbindQuotaExceeded` = 30-day rebind lock).
 - Quota spend — paid lots *and* trial buckets — is server-accounted via `consume(...)` (keyed by
   `licenseCode`); local counters are offline display caches only.
+- **Billing authority can sit on your own server/gateway.** Client-side `consume` is a forgeable
+  signal — anyone who decompiles the plugin can skip the `consume` call and the server balance never
+  moves. If the product has any server hop (AI inference, cloud relay), prefer calling `consume`
+  **server-side** (same `requestId` idempotency) right after the resource is really spent; the client
+  keeps only a balance mirror + soft gate (block confirmed-exhausted users without a request) and
+  reads spend detail from `/license/quota/txn`.
 - `trialCount` is a product-level trial dimension (published under `licenseInfo.trialCount`, not per edition row)
   that exists only for products using the usage-based quota model (`licensePricingModel = QUOTA`); under the
   default `EDITION` model trials are day-based (`trialDays`) and the publish form exposes no trial-quota field.

@@ -191,6 +191,11 @@ gating and error UX rules from this skill still apply. Extension-specific deltas
 - Quota spend is server-accounted for paid lots *and* trial buckets (`consume(..., kind='trial')`,
   balance = `trialRemaining`); the local counter is a display cache only — same rule as desktop
   (rules 5/9, [reference.md](reference.md)).
+- **Prefer server/gateway billing authority when the product has a server hop.** The plugin's own
+  `consume` call is forgeable (decompile → skip it → the server balance never moves). If the feature
+  already goes through your server (AI inference, cloud relay), do the `consume` there instead (same
+  `requestId` idempotency, fired after the resource is truly spent); the extension keeps only a balance
+  mirror + soft gate and reads the "recent spend" list via `getQuotaTxn` (`get_quota_txn` in Python; Java REST only) - returns only this code's rows, newest first.
 
 ## Resources
 
