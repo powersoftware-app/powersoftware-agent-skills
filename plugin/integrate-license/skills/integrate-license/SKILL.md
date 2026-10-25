@@ -74,9 +74,11 @@ Ask the user which one if their product setup doesn't make it obvious.
 10. **Read fields per pricing model.** A product is either `EDITION` (tiers) or `QUOTA` (usage).
     Fields not applicable to the current model are always `null` — render `-` and never assume presence:
     `quotaAmount`/`quotaUsed`/`quotaRemaining`/`quotaNextExpiry`/`trialCount`/`trialUsed`/`trialRemaining`/`trialNextResetTime`
-    are QUOTA-only (`null` for EDITION); `softwareMajorVersion`/`trialDays`/`trialExpiryTime`/`licenseDeductionEnabled`
-    are EDITION-only. `billingPeriod` is dual-meaning (EDITION = subscription period; QUOTA = per-lot
-    validity). Full mapping in [reference.md](reference.md).
+    are QUOTA-only (`null` for EDITION); `softwareMajorVersion`/`licenseDeductionEnabled` are EDITION-only.
+    `trialDays`/`trialExpiryTime` are independent of the model — they are present only when the product
+    actually configured trial days (`null` otherwise), so a QUOTA product may carry both a day limit and
+    a trial quota at the same time. `billingPeriod` is dual-meaning (EDITION = subscription period;
+    QUOTA = per-lot validity). Full mapping in [reference.md](reference.md).
 
 ## Step 2 — Fetch the SDK into the project
 
