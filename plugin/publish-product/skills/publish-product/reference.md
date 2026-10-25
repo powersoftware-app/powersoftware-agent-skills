@@ -63,8 +63,12 @@ Sequence per file:
 | `product_file` | installer / source zip | exe/msi/dmg/pkg/zip/rar/7z/deb/rpm/apk/appimage/tar/gz, ≤ 100 MB |
 | `front_user_avatar` | profile picture | image types, ≤ 10 MB |
 
-`md5` = lowercase hex MD5 of the file (content-addressed dedup). `fileSuffix` = extension without
-leading dot, lowercase. Per-user upload-count caps apply (`FILE.process.upload_limit`).
+`md5` = lowercase hex MD5 of the file (content-addressed dedup). `fileSuffix` MUST include the leading
+dot (`.zip`, `.png`, lowercase): the backend builds the object name as
+`{prefix}/{userId}/{md5}{fileSuffix}` by raw concatenation, so a bare `zip` stores an extension-less
+object name (`...<md5>zip`), and the order/download path — which derives the suffix via
+`fileUri.split('.').pop()` — then produces a garbage download filename.
+Per-user upload-count caps apply (`FILE.process.upload_limit`).
 Product images/files are protected from manual `deleteFile`.
 
 ### Submit product (requires `DEVELOPER` role)

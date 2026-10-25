@@ -121,7 +121,10 @@ export async function uploadFile(cfg, localPath, businessType) {
   const size = statSync(abs).size;
   const suffix = extname(abs).replace(/^\./, '').toLowerCase();
   const md5 = md5File(abs);
-  const fileSuffix = suffix;
+  // 平台侧 generateFileObjectName = `{prefix}/{userId}/{md5}{fileSuffix}`，后缀是**原样拼接**的；
+  // 下单下载又用 `fileUri.split('.').pop()` 取后缀拼下载文件名。所以这里必须带上前导点：
+  // 传裸 'zip' 会存成 `...<md5>zip`（无点），下载文件名会退化成整条对象路径。
+  const fileSuffix = suffix ? `.${suffix}` : '';
 
   const check = unwrap(await api(cfg, '/file/upload/checkFileExists', {
     body: { businessType, fileSuffix, md5 }, auth: true,
